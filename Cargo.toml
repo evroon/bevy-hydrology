@@ -1,8 +1,8 @@
 [package]
-name = "bevy_game" # ToDo
+name = "bevy_experiments"
 version = "0.1.0"
 publish = false
-authors = ["Niklas Eicker <git@nikl.me>"] # ToDo: you are the author ;)
+authors = ["Erik Vroon"]
 edition = "2021"
 exclude = ["dist", "build", "assets", "credits"]
 
@@ -53,11 +53,15 @@ default = [
 bevy = { version = "0.10", default-features = false }
 bevy_kira_audio = { version = "0.15" }
 bevy_asset_loader = { version = "0.15" }
-rand = { version = "0.8.3" }
+bevy_rapier3d = { version = "0.21.0", features = [ "simd-stable", "debug-render-3d" ] }
+bevy_egui = "0.20.1"
+bevy_tasks = "0.10.0"
+
+rand = { version = "0.8.5" }
 
 # keep the following in sync with Bevy's dependencies
 winit = { version = "0.28", default-features = false }
 image = { version = "0.24", default-features = false }
 
 [build-dependencies]
-embed-resource = "1.4"
+embed-resource = "1.8.0"

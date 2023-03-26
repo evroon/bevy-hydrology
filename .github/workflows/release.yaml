@@ -5,12 +5,11 @@ on:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+*"
 
-# ToDo: adapt names
 env:
   # heads-up: this value is used as a pattern in an sed command as a workaround for a trunk issue
   #   if you use special characters, take a look at the 'Make paths relative' step in the 'build-web' job
-  GAME_EXECUTABLE_NAME: bevy_game
-  GAME_OSX_APP_NAME: BevyGame
+  GAME_EXECUTABLE_NAME: bevy_experiments
+  GAME_OSX_APP_NAME: BevyExperiments
 
 permissions:
   contents: write
@@ -18,8 +17,8 @@ permissions:
 jobs:
   build-macOS:
     runs-on: macos-latest
-    
-    env: 
+
+    env:
       # macOS 11.0 Big Sur is the first version to support universal binaries
       MACOSX_DEPLOYMENT_TARGET: 11.0
     steps:
