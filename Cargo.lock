@@ -380,7 +380,7 @@ dependencies = [
  "bevy_ecs",
  "bevy_log",
  "bevy_reflect",
- "bevy_tasks",
+ "bevy_tasks 0.10.1",
  "bevy_utils",
  "bevy_winit",
  "crossbeam-channel",
@@ -428,7 +428,7 @@ dependencies = [
  "bevy_ecs",
  "bevy_math",
  "bevy_reflect",
- "bevy_tasks",
+ "bevy_tasks 0.10.1",
  "bevy_utils",
  "bytemuck",
 ]
@@ -498,7 +498,7 @@ dependencies = [
  "bevy_ecs_macros",
  "bevy_ptr",
  "bevy_reflect",
- "bevy_tasks",
+ "bevy_tasks 0.10.1",
  "bevy_utils",
  "downcast-rs",
  "event-listener",
@@ -552,7 +552,7 @@ dependencies = [
  "bevy_egui",
  "bevy_kira_audio",
  "bevy_rapier3d",
- "bevy_tasks",
+ "bevy_tasks 0.12.1",
  "embed-resource",
  "image",
  "rand",
@@ -580,7 +580,7 @@ dependencies = [
  "bevy_reflect",
  "bevy_render",
  "bevy_scene",
- "bevy_tasks",
+ "bevy_tasks 0.10.1",
  "bevy_transform",
  "bevy_utils",
  "gltf",
@@ -643,7 +643,7 @@ dependencies = [
  "bevy_render",
  "bevy_scene",
  "bevy_sprite",
- "bevy_tasks",
+ "bevy_tasks 0.10.1",
  "bevy_text",
  "bevy_time",
  "bevy_transform",
@@ -807,7 +807,7 @@ dependencies = [
  "bevy_mikktspace",
  "bevy_reflect",
  "bevy_render_macros",
- "bevy_tasks",
+ "bevy_tasks 0.10.1",
  "bevy_time",
  "bevy_transform",
  "bevy_utils",
@@ -894,9 +894,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_tasks"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e368e4177fe70d695d5cb67fb7480fa262de79948d9b883a21788b9abf5a85a"
+checksum = "3de86364316e151aeb0897eaaa917c3ad5ee5ef1471a939023cf7f2d5ab76955"
 dependencies = [
  "async-channel",
  "async-executor",
@@ -904,6 +904,20 @@ dependencies = [
  "concurrent-queue",
  "futures-lite",
  "once_cell",
+ "wasm-bindgen-futures",
+]
+
+[[package]]
+name = "bevy_tasks"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f4fefa7fe0da8923525f7500e274f1bd60dbd79918a25cf7d0dfa0a6ba15c1cf"
+dependencies = [
+ "async-channel",
+ "async-executor",
+ "async-task",
+ "concurrent-queue",
+ "futures-lite",
  "wasm-bindgen-futures",
 ]
 
