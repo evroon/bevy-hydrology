@@ -10,7 +10,7 @@ impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<ButtonColors>()
             .add_systems(OnEnter(GameState::Menu), setup_menu)
-            // .add_systems(Render, click_play_button.in_set(Update(GameState::Menu)))
+            .add_systems(Update, click_play_button.run_if(in_state(GameState::Menu)))
             .add_systems(OnExit(GameState::Menu), cleanup_menu);
     }
 }
