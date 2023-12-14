@@ -51,7 +51,7 @@ default = [
 
 [dependencies]
 bevy = { version = "0.10", default-features = false }
-bevy_kira_audio = { version = "0.15" }
+bevy_kira_audio = { version = "0.18" }
 bevy_asset_loader = { version = "0.15" }
 bevy_rapier3d = { version = "0.21.0", features = [ "simd-stable", "debug-render-3d" ] }
 bevy_egui = "0.22.0"
