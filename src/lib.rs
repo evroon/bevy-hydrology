@@ -4,21 +4,19 @@ mod loading;
 mod menu;
 mod rapier_demo;
 mod simple_3d_scene;
+mod terrain;
 mod water;
 
 use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
-use bevy_rapier3d::{
-    prelude::{NoUserData, RapierPhysicsPlugin},
-    render::RapierDebugRenderPlugin,
-};
+use bevy_rapier3d::prelude::{NoUserData, RapierPhysicsPlugin};
 use camera_control::CameraControllerPlugin;
 use loading::LoadingPlugin;
 use menu::MenuPlugin;
-use rapier_demo::RapierDemoPlugin;
 use simple_3d_scene::Simple3DScenePlugin;
+use terrain::LowPolyTerrainPlugin;
 
 // This example game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -38,21 +36,21 @@ pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_state::<GameState>()
-            .add_plugin(LoadingPlugin)
-            .add_plugin(MenuPlugin)
-            .add_plugin(Simple3DScenePlugin)
-            .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
-            .add_plugin(RapierDebugRenderPlugin::default())
-            // .add_plugin(WaterPlugin)
-            // .add_plugin(BoidsPlugin)
-            .add_plugin(RapierDemoPlugin)
-            .add_plugin(CameraControllerPlugin);
+        app.add_state::<GameState>().add_plugins((
+            LoadingPlugin,
+            MenuPlugin,
+            Simple3DScenePlugin,
+            RapierPhysicsPlugin::<NoUserData>::default(),
+            CameraControllerPlugin,
+            LowPolyTerrainPlugin,
+        ));
 
         #[cfg(debug_assertions)]
         {
-            app.add_plugin(FrameTimeDiagnosticsPlugin::default())
-                .add_plugin(LogDiagnosticsPlugin::default());
+            app.add_plugins((
+                FrameTimeDiagnosticsPlugin::default(),
+                LogDiagnosticsPlugin::default(),
+            ));
         }
     }
 }

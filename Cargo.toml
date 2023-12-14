@@ -23,7 +23,7 @@ lto = "thin"
 
 [features]
 dev = [
-    "bevy/bevy_dylib",
+    # "bevy/bevy_dylib",
 ]
 
 # Bevy defaults minus audio and some other not needed things
@@ -45,17 +45,18 @@ default = [
     "bevy/zstd",
     "bevy/x11",
     "bevy/ktx2",
-    "bevy/filesystem_watcher",
+    # "bevy/filesystem_watcher",
     "bevy/tonemapping_luts"
 ]
 
 [dependencies]
-bevy = { version = "0.10", default-features = false }
-bevy_kira_audio = { version = "0.18" }
-bevy_asset_loader = { version = "0.15" }
-bevy_rapier3d = { version = "0.21.0", features = [ "simd-stable", "debug-render-3d" ] }
-bevy_egui = "0.22.0"
+bevy = { version = "0.12.1", default-features = false }
+bevy_kira_audio = { version = "0.18.0" }
+bevy_asset_loader = { version = "0.18.0" }
+bevy_rapier3d = { version = "0.23.0", features = [ "simd-stable", "debug-render-3d" ] }
+bevy_egui = "0.24.0"
 bevy_tasks = "0.12.1"
+noise = "0.8.2"
 
 rand = { version = "0.8.5" }
 

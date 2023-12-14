@@ -7,7 +7,7 @@ pub struct RapierDemoPlugin;
 
 impl Plugin for RapierDemoPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(spawn_rigid_bodies)
-            .add_system(spawn_on_mouseclick);
+        app.add_systems(Startup, spawn_rigid_bodies)
+            .add_systems(Update, spawn_on_mouseclick);
     }
 }

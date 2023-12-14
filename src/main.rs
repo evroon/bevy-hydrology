@@ -18,12 +18,14 @@ fn main() {
                 title: "Bevy experiments".to_string(),
                 resolution: (1920., 1040.).into(),
                 canvas: Some("#bevy".to_owned()),
+                fit_canvas_to_parent: true,
+                prevent_default_event_handling: false,
                 ..default()
             }),
             ..default()
         }))
-        .add_system(set_window_icon.on_startup())
-        .add_plugin(GamePlugin)
+        .add_systems(Startup, set_window_icon)
+        .add_plugins(GamePlugin)
         .run();
 }
 

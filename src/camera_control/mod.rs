@@ -48,11 +48,11 @@ impl Default for CameraController {
             key_right: KeyCode::D,
             key_up: KeyCode::E,
             key_down: KeyCode::Q,
-            key_run: KeyCode::LShift,
+            key_run: KeyCode::ShiftLeft,
             mouse_key_enable_mouse: MouseButton::Middle,
             keyboard_key_enable_mouse: KeyCode::M,
             walk_speed: 5.0,
-            run_speed: 15.0,
+            run_speed: 45.0,
             friction: 0.5,
             pitch: 0.0,
             yaw: 0.0,
@@ -91,7 +91,7 @@ pub struct CameraControllerPlugin;
 
 impl Plugin for CameraControllerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(camera_controller);
+        app.add_systems(Update, camera_controller);
     }
 }
 
@@ -174,7 +174,7 @@ fn camera_controller(
                 window.cursor.visible = false;
             }
 
-            for mouse_event in mouse_events.iter() {
+            for mouse_event in mouse_events.read() {
                 mouse_delta += mouse_event.delta;
             }
         }
