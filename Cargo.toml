@@ -50,7 +50,7 @@ bevy = { version = "0.12", default-features = false, features = [
     "webgl2",
 ] }
 bevy_kira_audio = { version = "0.18.0" }
-bevy_asset_loader = { version = "0.18.0" }
+bevy_asset_loader = { version = "0.19.0" }
 bevy_rapier3d = { version = "0.23.0", features = [ "simd-stable", "debug-render-3d" ] }
 bevy_egui = "0.24.0"
 bevy_tasks = "0.12.1"
