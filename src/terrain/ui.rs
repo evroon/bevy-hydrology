@@ -11,7 +11,10 @@ use bevy_egui::{
     EguiContexts,
 };
 
-use super::system::{rebuild_terrain, TerrainBuildConfig};
+use super::{
+    hydrology::{apply_hydrology, HydrologyConfig},
+    system::{rebuild_terrain, TerrainBuildConfig},
+};
 
 pub fn terrain_ui(
     meshes: ResMut<Assets<Mesh>>,
@@ -44,10 +47,17 @@ pub fn terrain_ui(
 }
 
 pub fn ui_system(
-    meshes: ResMut<Assets<Mesh>>,
+    mut meshes: ResMut<Assets<Mesh>>,
     terrain_query: Query<(Entity, &Handle<Mesh>, &mut TerrainBuildConfig)>,
+    hydrology_query: Query<(Entity, &Handle<Mesh>, &mut HydrologyConfig)>,
     mut contexts: EguiContexts,
 ) {
+    // panic!("{}", meshes.len());
+
+    meshes
+        .iter_mut()
+        .for_each(|x| apply_hydrology(x.1, hydrology_query.single().2));
+
     egui::Window::new("Terrain")
         .current_pos(Pos2 { x: 10., y: 160. })
         .show(contexts.ctx_mut(), |ui| {

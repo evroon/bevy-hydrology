@@ -1,4 +1,4 @@
-use super::{CELL_SIZE, TERRAIN_SIZE};
+use super::{hydrology::HydrologyConfig, CELL_SIZE, TERRAIN_SIZE};
 use bevy::{
     prelude::*,
     render::{mesh, render_resource::PrimitiveTopology},
@@ -52,10 +52,18 @@ fn create_mesh(
     meshes: ResMut<Assets<Mesh>>,
     materials: ResMut<Assets<StandardMaterial>>,
     build_config: TerrainBuildConfig,
+    hydrology_config: HydrologyConfig,
 ) {
     let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
     update_mesh(build_config, &mut mesh);
-    spawn_mesh(commands, meshes, mesh, materials, build_config);
+    spawn_mesh(
+        commands,
+        meshes,
+        mesh,
+        materials,
+        build_config,
+        hydrology_config,
+    );
 }
 
 fn update_mesh(build_config: TerrainBuildConfig, mesh: &mut Mesh) {
@@ -73,6 +81,7 @@ fn spawn_mesh(
     mesh: Mesh,
     mut materials: ResMut<'_, Assets<StandardMaterial>>,
     build_config: TerrainBuildConfig,
+    hydrology_config: HydrologyConfig,
 ) {
     commands.spawn((
         PbrBundle {
@@ -87,6 +96,7 @@ fn spawn_mesh(
             ..default()
         },
         build_config,
+        hydrology_config,
     ));
 }
 
@@ -110,8 +120,8 @@ fn build_mesh_data(build_config: TerrainBuildConfig) -> MeshDataResult {
 
     for x in 0..TERRAIN_SIZE.x {
         for y in 0..TERRAIN_SIZE.y {
-            let x_pos = (x as f32) * CELL_SIZE - (TERRAIN_SIZE.x as f32) * 0.5;
-            let z_pos = (y as f32) * CELL_SIZE - (TERRAIN_SIZE.y as f32) * 0.5;
+            let x_pos = (x as f32) * CELL_SIZE;
+            let z_pos = (y as f32) * CELL_SIZE;
 
             let i_32 = x + y * TERRAIN_SIZE.x;
             let i = usize::try_from(i_32).unwrap();
@@ -165,7 +175,13 @@ pub fn setup_low_poly_terrain(
     meshes: ResMut<Assets<Mesh>>,
     materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    create_mesh(commands, meshes, materials, TerrainBuildConfig::default());
+    create_mesh(
+        commands,
+        meshes,
+        materials,
+        TerrainBuildConfig::default(),
+        HydrologyConfig::default(),
+    );
 }
 
 pub fn rebuild_terrain(

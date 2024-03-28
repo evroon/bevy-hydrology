@@ -7,6 +7,8 @@ use bevy_egui::{
 };
 use bevy_panorbit_camera::PanOrbitCamera;
 
+use crate::terrain::TERRAIN_SIZE_F32;
+
 pub fn simple_3d_scene(mut commands: Commands, mut ambient_light: ResMut<AmbientLight>) {
     let mut camera_transform = Transform::from_xyz(0.0, 0.0, 0.0);
     camera_transform.rotate_x(-30.0 / 180.0 * PI);
@@ -22,7 +24,10 @@ pub fn simple_3d_scene(mut commands: Commands, mut ambient_light: ResMut<Ambient
     });
     commands.spawn((
         Camera3dBundle {
-            transform: Transform::from_xyz(-240.0, 240.0, 000.0).looking_at(Vec3::ZERO, Vec3::Y),
+            transform: Transform::from_xyz(-240.0, 240.0, 000.0).looking_at(
+                Vec3::new(TERRAIN_SIZE_F32.x * 0.5, 0.0, TERRAIN_SIZE_F32.y * 0.5),
+                Vec3::Y,
+            ),
             ..default()
         },
         PanOrbitCamera {
