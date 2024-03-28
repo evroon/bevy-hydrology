@@ -53,15 +53,12 @@ struct Drop {
 }
 
 fn get_positions_and_normals(mesh: &mut Mesh) -> (&mut Positions, &mut Normals) {
-    let mut a = mesh
-        .attributes_mut()
-        .into_iter()
-        .map(|(_, values)| match values {
-            VertexAttributeValues::Float32x3(hmap) => hmap,
-            _ => {
-                panic!("")
-            }
-        });
+    let mut a = mesh.attributes_mut().map(|(_, values)| match values {
+        VertexAttributeValues::Float32x3(hmap) => hmap,
+        _ => {
+            panic!("")
+        }
+    });
 
     (a.next().unwrap(), a.next().unwrap())
 }
