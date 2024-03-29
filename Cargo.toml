@@ -60,7 +60,7 @@ rand = { version = "0.8.5" }
 
 # keep the following in sync with Bevy's dependencies
 winit = { version = "0.28", default-features = false }
-image = { version = "0.24", default-features = false }
+image = { version = "0.25", default-features = false }
 bevy_panorbit_camera = "0.13.1"
 
 [build-dependencies]
