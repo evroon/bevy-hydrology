@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy::winit::WinitWindows;
 use bevy::DefaultPlugins;
-use bevy_experiments::GamePlugin;
+use bevy_hydrology::GamePlugin;
 use std::io::Cursor;
 use winit::window::Icon;
 
@@ -15,7 +15,7 @@ fn main() {
         .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy experiments".to_string(),
+                title: "Bevy hydrology".to_string(),
                 resolution: (1920., 1040.).into(),
                 canvas: Some("#bevy".to_owned()),
                 fit_canvas_to_parent: true,

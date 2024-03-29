@@ -5,9 +5,9 @@
         <key>CFBundleDevelopmentRegion</key>
         <string>en</string>
         <key>CFBundleDisplayName</key>
-        <string>BevyExperiments</string>
+        <string>BevyHydrology</string>
         <key>CFBundleExecutable</key>
-        <string>bevy_experiments</string>
+        <string>bevy_hydrology</string>
         <key>CFBundleIconFile</key>
         <string>AppIcon.icns</string>
         <key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>CFBundleName</key>
-        <string>Bevy Experiments</string>
+        <string>Bevy Hydrology</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>

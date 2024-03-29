@@ -1,5 +1,5 @@
 [package]
-name = "bevy_experiments"
+name = "bevy_hydrology"
 version = "0.1.0"
 publish = false
 authors = ["Erik Vroon"]
