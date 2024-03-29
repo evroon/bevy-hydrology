@@ -106,8 +106,8 @@ fn erode(mesh: &mut Mesh, config: &HydrologyConfig) {
 
             if drop.pos.x < 0.0
                 || drop.pos.y < 0.0
-                || drop.pos.x >= TERRAIN_SIZE_F32.x - 1.0
-                || drop.pos.y >= TERRAIN_SIZE_F32.y - 1.0
+                || drop.pos.x >= TERRAIN_SIZE_F32.x
+                || drop.pos.y >= TERRAIN_SIZE_F32.y
             {
                 break;
             }
