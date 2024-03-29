@@ -36,6 +36,16 @@ pub fn simple_3d_scene(mut commands: Commands, mut ambient_light: ResMut<Ambient
             button_orbit: MouseButton::Left,
             ..Default::default()
         },
+        FogSettings {
+            color: Color::rgba(0.35, 0.48, 0.66, 1.0),
+            directional_light_color: Color::rgba(1.0, 0.95, 0.85, 0.5),
+            directional_light_exponent: 30.0,
+            falloff: FogFalloff::from_visibility_colors(
+                8192.0,
+                Color::rgb(0.35, 0.5, 0.66),
+                Color::rgb(0.8, 0.844, 1.0),
+            ),
+        },
     ));
 
     ambient_light.color = Color::WHITE;
@@ -46,6 +56,7 @@ pub fn directional_light_ui(
     light: &mut DirectionalLight,
     camera_transform: (&Transform, &Camera),
     ui: &mut Ui,
+    mut fog: Mut<FogSettings>,
 ) {
     ui.label("Intensity");
     ui.add(egui::Slider::new(&mut light.illuminance, 100.0..=100_000.0));
@@ -64,12 +75,20 @@ pub fn directional_light_ui(
     ui.label("Camera position z");
     ui.label(camera_transform.0.translation.z.round().to_string());
     ui.end_row();
+
+    if ui.button("Toggle fog").clicked() {
+        let a = fog.color.a();
+        fog.color.set_a(1.0 - a);
+    };
+    // ui.add(egui::Slider::new(&mut fog.falloff., 100.0..=100_000.0));
+    ui.end_row();
 }
 
 pub fn ui_system(
     mut light_query: Query<&mut DirectionalLight>,
     camera_query: Query<(&Transform, &Camera)>,
     mut contexts: EguiContexts,
+    mut fog: Query<&mut FogSettings>,
 ) {
     egui::Window::new("3D world")
         .current_pos(Pos2 { x: 10., y: 10. })
@@ -80,7 +99,12 @@ pub fn ui_system(
                 .striped(true)
                 .show(ui, |ui| {
                     light_query.for_each_mut(|mut light| {
-                        directional_light_ui(&mut light, camera_query.single(), ui)
+                        directional_light_ui(
+                            &mut light,
+                            camera_query.single(),
+                            ui,
+                            fog.single_mut(),
+                        )
                     });
                 });
         });
