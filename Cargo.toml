@@ -50,7 +50,7 @@ bevy = { version = "0.12", default-features = false, features = [
     "webgl2",
 ] }
 bevy_asset_loader = { version = "0.19.1" }
-bevy_egui = "0.24.0"
+bevy_egui = "0.26.0"
 noise = "0.8.2"
 rand = { version = "0.8.5" }
 
