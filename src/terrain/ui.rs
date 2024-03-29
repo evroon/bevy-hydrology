@@ -12,7 +12,7 @@ use bevy_egui::{
 };
 
 use super::{
-    hydrology::{apply_hydrology, HydrologyConfig},
+    hydrology::HydrologyConfig,
     system::{rebuild_terrain, TerrainBuildConfig},
 };
 
@@ -67,6 +67,10 @@ pub fn hydrology_ui(
     ui.end_row();
     ui.add(egui::Slider::new(&mut config.min_volume, 0.001..=0.1).text("Minimum volume"));
     ui.end_row();
+    ui.add(egui::Slider::new(&mut config.max_drops, 0..=400_000).text("Maximum drops"));
+    ui.end_row();
+    ui.label("Drops count: ".to_owned() + &config.drop_count.to_string());
+    ui.end_row();
 
     if ui.button("Reset to defaults").clicked() {
         let default = HydrologyConfig::default();
@@ -77,19 +81,17 @@ pub fn hydrology_ui(
         config.friction = default.friction;
         config.min_volume = default.min_volume;
         config.drops_per_frame_per_chunck = default.drops_per_frame_per_chunck;
+        config.drop_count = default.drop_count;
+        config.max_drops = default.max_drops;
     };
 }
 
 pub fn ui_system(
-    mut meshes: ResMut<Assets<Mesh>>,
+    meshes: ResMut<Assets<Mesh>>,
     terrain_query: Query<(Entity, &Handle<Mesh>, &mut TerrainBuildConfig)>,
     hydrology_query: Query<(Entity, &Handle<Mesh>, &mut HydrologyConfig)>,
     mut contexts: EguiContexts,
 ) {
-    meshes
-        .iter_mut()
-        .for_each(|x| apply_hydrology(x.1, hydrology_query.single().2));
-
     egui::Window::new("Terrain Generation")
         .current_pos(Pos2 { x: 10., y: 160. })
         .show(contexts.ctx_mut(), |ui| {

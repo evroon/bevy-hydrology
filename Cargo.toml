@@ -49,13 +49,9 @@ bevy = { version = "0.12", default-features = false, features = [
     "default_font",
     "webgl2",
 ] }
-bevy_kira_audio = { version = "0.18.0" }
 bevy_asset_loader = { version = "0.19.1" }
-bevy_rapier3d = { version = "0.23.0", features = [ "simd-stable", "debug-render-3d" ] }
 bevy_egui = "0.24.0"
-bevy_tasks = "0.12.1"
 noise = "0.8.2"
-
 rand = { version = "0.8.5" }
 
 # keep the following in sync with Bevy's dependencies

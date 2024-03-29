@@ -11,6 +11,11 @@ use noise::{NoiseFn, Perlin};
 
 type MeshDataResult = (usize, Vec<[f32; 3]>, Vec<[f32; 3]>, Vec<u32>);
 
+pub type Position = [f32; 3];
+pub type Normal = [f32; 3];
+pub type Positions = std::vec::Vec<Position>;
+pub type Normals = std::vec::Vec<Normal>;
+
 #[derive(Clone)]
 struct SampleConfig {
     amplitude: f32,
@@ -125,11 +130,11 @@ fn spawn_mesh(
 
 fn build_mesh_data(build_config: TerrainBuildConfig) -> MeshDataResult {
     let cell_count = usize::try_from(TERRAIN_SIZE.x * TERRAIN_SIZE.y).unwrap();
-    let triangle_count = cell_count * 4;
+    let triangle_count = cell_count * 6;
 
     let mut positions = vec![[0., 0., 0.]; triangle_count];
     let mut normals = vec![[0., 0., 0.]; triangle_count];
-    let mut indices = vec![0u32; cell_count * 6];
+    let mut indices = vec![0; triangle_count];
 
     let sampler = Sampler {
         perlin: Perlin::new(build_config.seed),
@@ -149,18 +154,24 @@ fn build_mesh_data(build_config: TerrainBuildConfig) -> MeshDataResult {
             let i_32 = x + y * TERRAIN_SIZE.x;
             let i = usize::try_from(i_32).unwrap();
 
-            positions[i * 4] = [x_pos, sample_noise(x_pos, z_pos, &sampler), z_pos];
-            positions[i * 4 + 1] = [
-                x_pos + CELL_SIZE,
-                sample_noise(x_pos + CELL_SIZE, z_pos + CELL_SIZE, &sampler),
-                z_pos + CELL_SIZE,
-            ];
-            positions[i * 4 + 2] = [
+            positions[i * 6] = [x_pos, sample_noise(x_pos, z_pos, &sampler), z_pos];
+            positions[i * 6 + 1] = [
                 x_pos,
                 sample_noise(x_pos, z_pos + CELL_SIZE, &sampler),
                 z_pos + CELL_SIZE,
             ];
-            positions[i * 4 + 3] = [
+            positions[i * 6 + 2] = [
+                x_pos + CELL_SIZE,
+                sample_noise(x_pos + CELL_SIZE, z_pos + CELL_SIZE, &sampler),
+                z_pos + CELL_SIZE,
+            ];
+            positions[i * 6 + 3] = [x_pos, sample_noise(x_pos, z_pos, &sampler), z_pos];
+            positions[i * 6 + 4] = [
+                x_pos + CELL_SIZE,
+                sample_noise(x_pos + CELL_SIZE, z_pos + CELL_SIZE, &sampler),
+                z_pos + CELL_SIZE,
+            ];
+            positions[i * 6 + 5] = [
                 x_pos + CELL_SIZE,
                 sample_noise(x_pos + CELL_SIZE, z_pos, &sampler),
                 z_pos,
@@ -169,28 +180,43 @@ fn build_mesh_data(build_config: TerrainBuildConfig) -> MeshDataResult {
             let i_idx_usize = usize::try_from(i_32 * 6).unwrap();
 
             let slice = &[
-                i_32 * 4,
-                i_32 * 4 + 2,
-                i_32 * 4 + 1,
-                i_32 * 4,
-                i_32 * 4 + 1,
-                i_32 * 4 + 3,
+                i_32 * 6 + 0,
+                i_32 * 6 + 1,
+                i_32 * 6 + 2,
+                i_32 * 6 + 3,
+                i_32 * 6 + 4,
+                i_32 * 6 + 5,
             ];
             indices.splice(i_idx_usize..i_idx_usize + 6, slice.iter().cloned());
-
-            let v1 = Vec3::from_array(positions[i * 4]);
-            let v2 = Vec3::from_array(positions[i * 4 + 1]);
-            let v3 = Vec3::from_array(positions[i * 4 + 2]);
-
-            let normal = (v3 - v1).cross(v2 - v1).to_array();
-
-            normals[i * 4] = normal;
-            normals[i * 4 + 1] = normal;
-            normals[i * 4 + 2] = normal;
-            normals[i * 4 + 3] = normal;
         }
     }
+
+    recalculate_normals(&mut positions, &mut normals);
     (triangle_count, positions, normals, indices)
+}
+
+pub fn recalculate_normals(positions: &mut Positions, normals: &mut Normals) {
+    for x in 0..TERRAIN_SIZE.x {
+        for y in 0..TERRAIN_SIZE.y {
+            let i_32 = x + y * TERRAIN_SIZE.x;
+            let i = usize::try_from(i_32).unwrap();
+
+            let a = Vec3::from_array(positions[i * 6]);
+            let b = Vec3::from_array(positions[i * 6 + 1]);
+            let c = Vec3::from_array(positions[i * 6 + 2]);
+            let d = Vec3::from_array(positions[i * 6 + 5]);
+
+            let n1 = (b - a).cross(c - a).normalize().to_array();
+            let n2 = (c - d).cross(c - b).normalize().to_array();
+
+            normals[i * 6] = n1;
+            normals[i * 6 + 1] = n1;
+            normals[i * 6 + 2] = n1;
+            normals[i * 6 + 3] = n2;
+            normals[i * 6 + 4] = n2;
+            normals[i * 6 + 5] = n2;
+        }
+    }
 }
 
 pub fn setup_low_poly_terrain(
