@@ -1,7 +1,11 @@
 use super::{hydrology::HydrologyConfig, CELL_SIZE, TERRAIN_SIZE};
 use bevy::{
+    pbr::{ExtendedMaterial, MaterialExtension, OpaqueRendererMethod},
     prelude::*,
-    render::{mesh, render_resource::PrimitiveTopology},
+    render::{
+        mesh,
+        render_resource::{AsBindGroup, PrimitiveTopology, ShaderRef},
+    },
 };
 use noise::{NoiseFn, Perlin};
 
@@ -36,6 +40,22 @@ impl Default for TerrainBuildConfig {
     }
 }
 
+#[derive(Asset, AsBindGroup, Reflect, Debug, Clone)]
+pub struct TerrainShaderExtension {
+    #[uniform(100)]
+    quantize_steps: u32,
+}
+
+impl MaterialExtension for TerrainShaderExtension {
+    fn fragment_shader() -> ShaderRef {
+        "shaders/terrain_material.wgsl".into()
+    }
+
+    fn deferred_fragment_shader() -> ShaderRef {
+        "shaders/terrain_material.wgsl".into()
+    }
+}
+
 fn sample_noise(x_pos: f32, z_pos: f32, sampler: &Sampler) -> f32 {
     let mut y = 0.0;
     for config in &sampler.configs {
@@ -50,7 +70,7 @@ fn sample_noise(x_pos: f32, z_pos: f32, sampler: &Sampler) -> f32 {
 fn create_mesh(
     commands: Commands,
     meshes: ResMut<Assets<Mesh>>,
-    materials: ResMut<Assets<StandardMaterial>>,
+    materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TerrainShaderExtension>>>,
     build_config: TerrainBuildConfig,
     hydrology_config: HydrologyConfig,
 ) {
@@ -79,19 +99,22 @@ fn spawn_mesh(
     mut commands: Commands<'_, '_>,
     mut meshes: ResMut<'_, Assets<Mesh>>,
     mesh: Mesh,
-    mut materials: ResMut<'_, Assets<StandardMaterial>>,
+    mut materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TerrainShaderExtension>>>,
     build_config: TerrainBuildConfig,
     hydrology_config: HydrologyConfig,
 ) {
     commands.spawn((
-        PbrBundle {
+        MaterialMeshBundle {
             mesh: meshes.add(mesh),
-            material: materials.add(StandardMaterial {
-                base_color: Color::rgb(0.3, 0.5, 0.3),
-                // vary key PBR parameters on a grid of spheres to show the effect
-                metallic: 0.2,
-                perceptual_roughness: 1.0,
-                ..default()
+            material: materials.add(ExtendedMaterial {
+                base: StandardMaterial {
+                    base_color: Color::rgb(0.3, 0.5, 0.3),
+                    metallic: 0.2,
+                    perceptual_roughness: 1.0,
+                    opaque_render_method: OpaqueRendererMethod::Auto,
+                    ..Default::default()
+                },
+                extension: TerrainShaderExtension { quantize_steps: 3 },
             }),
             ..default()
         },
@@ -173,7 +196,7 @@ fn build_mesh_data(build_config: TerrainBuildConfig) -> MeshDataResult {
 pub fn setup_low_poly_terrain(
     commands: Commands,
     meshes: ResMut<Assets<Mesh>>,
-    materials: ResMut<Assets<StandardMaterial>>,
+    materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TerrainShaderExtension>>>,
 ) {
     create_mesh(
         commands,

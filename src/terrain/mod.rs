@@ -3,7 +3,7 @@ use system::*;
 mod hydrology;
 mod ui;
 
-use bevy::prelude::*;
+use bevy::{pbr::ExtendedMaterial, prelude::*};
 
 use self::ui::ui_system;
 
@@ -16,7 +16,10 @@ pub struct LowPolyTerrainPlugin;
 
 impl Plugin for LowPolyTerrainPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_low_poly_terrain)
+        app.add_plugins(MaterialPlugin::<
+            ExtendedMaterial<StandardMaterial, TerrainShaderExtension>,
+        >::default())
+            .add_systems(Startup, setup_low_poly_terrain)
             .add_systems(Update, ui_system);
     }
 }

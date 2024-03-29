@@ -23,12 +23,13 @@ type Normals = std::vec::Vec<Normal>;
 #[derive(Component, Clone, Copy)]
 pub struct HydrologyConfig {
     // volume_factor: f32,
-    dt: f32,
-    density: f32,
-    evap_rate: f32,
-    deposition_rate: f32,
-    min_volume: f32,
-    friction: f32,
+    pub dt: f32,
+    pub density: f32,
+    pub evap_rate: f32,
+    pub deposition_rate: f32,
+    pub min_volume: f32,
+    pub friction: f32,
+    pub drops_per_frame_per_chunck: u32,
 }
 
 impl Default for HydrologyConfig {
@@ -41,6 +42,7 @@ impl Default for HydrologyConfig {
             deposition_rate: 0.1,
             friction: 0.05,
             min_volume: 0.01,
+            drops_per_frame_per_chunck: 1024,
         }
     }
 }
@@ -75,12 +77,12 @@ fn get_position_at_pos(positions: &Positions, pos: UVec2) -> Normal {
 
 // fn recalculate_normal(mesh: &mut Mesh)
 
-fn erode(cycles_count: u32, mesh: &mut Mesh, config: &HydrologyConfig) {
+fn erode(mesh: &mut Mesh, config: &HydrologyConfig) {
     let mut rng = thread_rng();
     let dt = config.dt;
     let (positions, normals) = get_positions_and_normals(mesh);
 
-    for _ in 0..cycles_count {
+    for _ in 0..config.drops_per_frame_per_chunck {
         let newpos = Vec2::new(
             rng.gen_range(0.0..TERRAIN_SIZE_F32.x),
             rng.gen_range(0.0..TERRAIN_SIZE_F32.y),
@@ -163,5 +165,5 @@ fn recalculate_normals(positions: &mut Positions, normals: &mut Normals) {
 }
 
 pub fn apply_hydrology(mesh: &mut Mesh, config: &HydrologyConfig) {
-    erode(128, mesh, config);
+    erode(mesh, config);
 }

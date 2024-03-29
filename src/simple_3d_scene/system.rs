@@ -24,10 +24,11 @@ pub fn simple_3d_scene(mut commands: Commands, mut ambient_light: ResMut<Ambient
     });
     commands.spawn((
         Camera3dBundle {
-            transform: Transform::from_xyz(-240.0, 240.0, 000.0).looking_at(
-                Vec3::new(TERRAIN_SIZE_F32.x * 0.5, 0.0, TERRAIN_SIZE_F32.y * 0.5),
-                Vec3::Y,
-            ),
+            transform: Transform::from_xyz(TERRAIN_SIZE_F32.x - 240.0, 240.0, TERRAIN_SIZE_F32.y)
+                .looking_at(
+                    Vec3::new(TERRAIN_SIZE_F32.x * 0.5, 0.0, TERRAIN_SIZE_F32.y * 0.5),
+                    Vec3::Y,
+                ),
             ..default()
         },
         PanOrbitCamera {
