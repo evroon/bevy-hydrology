@@ -3,7 +3,7 @@
 <p align="center">
   <img
     width="800"
-    src="misc/preview.png"
+    src="misc/preview.jpg"
     alt="Hydrology simulation in Bevy"
   />
 </p>
