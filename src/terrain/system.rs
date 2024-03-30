@@ -38,7 +38,7 @@ pub struct TerrainBuildConfig {
 impl Default for TerrainBuildConfig {
     fn default() -> Self {
         Self {
-            seed: 123,
+            seed: 96,
             base_amplitude: 20.0,
             base_frequency: 0.01,
         }
@@ -180,7 +180,7 @@ fn build_mesh_data(build_config: TerrainBuildConfig) -> MeshDataResult {
             let i_idx_usize = usize::try_from(i_32 * 6).unwrap();
 
             let slice = &[
-                i_32 * 6 + 0,
+                i_32 * 6,
                 i_32 * 6 + 1,
                 i_32 * 6 + 2,
                 i_32 * 6 + 3,
