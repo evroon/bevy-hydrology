@@ -24,6 +24,10 @@ pub fn simple_3d_scene(mut commands: Commands, mut ambient_light: ResMut<Ambient
     });
     commands.spawn((
         Camera3dBundle {
+            camera: Camera {
+                hdr: true,
+                ..default()
+            },
             transform: Transform::from_xyz(TERRAIN_SIZE_F32.x - 240.0, 240.0, TERRAIN_SIZE_F32.y)
                 .looking_at(
                     Vec3::new(TERRAIN_SIZE_F32.x * 0.5, 0.0, TERRAIN_SIZE_F32.y * 0.5),
@@ -46,10 +50,11 @@ pub fn simple_3d_scene(mut commands: Commands, mut ambient_light: ResMut<Ambient
                 Color::rgb(0.8, 0.844, 1.0),
             ),
         },
+        // ScreenSpaceAmbientOcclusionBundle::default(), Too slow for my GPU
     ));
 
     ambient_light.color = Color::WHITE;
-    ambient_light.brightness = 0.4;
+    ambient_light.brightness = 200.0;
 }
 
 pub fn directional_light_ui(
