@@ -18,7 +18,10 @@ fn main() {
                 title: "Bevy hydrology".to_string(),
                 resolution: (1920., 1040.).into(),
                 canvas: Some("#bevy".to_owned()),
-                fit_canvas_to_parent: true,
+                // canvas {
+                //     width: 100%;
+                //     height: 100%;
+                // },
                 prevent_default_event_handling: false,
                 ..default()
             }),

@@ -4,6 +4,7 @@ use bevy::{
     prelude::*,
     render::{
         mesh,
+        render_asset::RenderAssetUsages,
         render_resource::{AsBindGroup, PrimitiveTopology, ShaderRef},
     },
 };
@@ -79,7 +80,10 @@ fn create_mesh(
     build_config: TerrainBuildConfig,
     hydrology_config: HydrologyConfig,
 ) {
-    let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+    let mut mesh = Mesh::new(
+        PrimitiveTopology::TriangleList,
+        RenderAssetUsages::MAIN_WORLD | RenderAssetUsages::RENDER_WORLD,
+    );
     update_mesh(build_config, &mut mesh);
     spawn_mesh(
         commands,
@@ -97,7 +101,7 @@ fn update_mesh(build_config: TerrainBuildConfig, mesh: &mut Mesh) {
     mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
     mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
     mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, vec![[0., 0.]; triangle_count]);
-    mesh.set_indices(Some(mesh::Indices::U32(indices)));
+    mesh.insert_indices(mesh::Indices::U32(indices));
 }
 
 fn spawn_mesh(

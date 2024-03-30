@@ -98,7 +98,7 @@ pub fn ui_system(
                 .spacing([40.0, 4.0])
                 .striped(true)
                 .show(ui, |ui| {
-                    light_query.for_each_mut(|mut light| {
+                    light_query.iter_mut().for_each(|mut light| {
                         directional_light_ui(
                             &mut light,
                             camera_query.single(),
