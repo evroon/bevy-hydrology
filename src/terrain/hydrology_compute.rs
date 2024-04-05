@@ -1,30 +1,28 @@
 use std::borrow::Cow;
 
 use bevy::{
-    asset::{Assets, Handle},
-    ecs::{
-        entity::Entity,
-        system::{Query, ResMut},
-    },
+    ecs::system::ResMut,
     prelude::*,
     render::{
         extract_resource::ExtractResourcePlugin,
-        mesh::Mesh,
         render_asset::RenderAssets,
         render_graph::{Node, NodeRunError, RenderGraph, RenderGraphContext, RenderLabel},
         render_resource::{binding_types::uniform_buffer, *},
         renderer::{RenderContext, RenderDevice, RenderQueue},
         texture::Image,
-        Render, RenderApp, RenderSet,
+        Extract, Render, RenderApp, RenderSet,
     },
 };
 
-use super::uniforms::{HydrologyImage, TerrainUniform, TerrainUniformBuffer};
+use super::{
+    uniforms::{HydrologyImage, TerrainUniform, TerrainUniformBuffer},
+    TerrainBuildConfig,
+};
 
 const SIZE: (u32, u32) = (256, 256);
 const WORKGROUP_SIZE: u32 = 8;
 
-#[derive(Component, Clone, Copy)]
+#[derive(Resource, Clone, Copy)]
 pub struct HydrologyConfig {
     // volume_factor: f32,
     pub dt: f32,
@@ -66,8 +64,25 @@ pub(crate) fn prepare_uniforms_bind_group(
     pipeline: Res<HydrologyPipeline>,
     render_queue: Res<RenderQueue>,
     mut terrain_uniform_buffer: ResMut<TerrainUniformBuffer>,
+    terrain_build_config: Res<TerrainBuildConfig>,
+    hydrology_config: Res<HydrologyConfig>,
     render_device: Res<RenderDevice>,
 ) {
+    let buffer = terrain_uniform_buffer.buffer.get_mut();
+
+    buffer.noise_seed = terrain_build_config.seed;
+    buffer.noise_amplitude = terrain_build_config.base_amplitude;
+    buffer.noise_base_frequency = terrain_build_config.base_frequency;
+    buffer.dt = hydrology_config.dt;
+    buffer.density = hydrology_config.density;
+    buffer.evap_rate = hydrology_config.evap_rate;
+    buffer.deposition_rate = hydrology_config.deposition_rate;
+    buffer.min_volume = hydrology_config.min_volume;
+    buffer.friction = hydrology_config.friction;
+    buffer.drops_per_frame_per_chunck = hydrology_config.drops_per_frame_per_chunck;
+    buffer.drop_count = hydrology_config.drop_count;
+    buffer.max_drops = hydrology_config.max_drops;
+
     terrain_uniform_buffer
         .buffer
         .write_buffer(&render_device, &render_queue);
@@ -104,8 +119,6 @@ pub(crate) fn prepare_textures_bind_group(
     );
     commands.insert_resource(HydrologyImageBindGroup(bind_group));
 }
-
-fn apply_hydrology(_mesh: &mut Mesh, _config: &mut HydrologyConfig) {}
 
 #[derive(Resource)]
 pub struct HydrologyPipeline {
@@ -244,15 +257,6 @@ impl Node for HydrologyNode {
     }
 }
 
-pub fn hydrology_system(
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut hydrology_query: Query<(Entity, &Handle<Mesh>, &mut HydrologyConfig)>,
-) {
-    meshes
-        .iter_mut()
-        .for_each(|x| apply_hydrology(x.1, &mut hydrology_query.single_mut().2));
-}
-
 pub struct HydrologyComputePlugin;
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
@@ -266,16 +270,21 @@ impl Plugin for HydrologyComputePlugin {
         let render_app = app.sub_app_mut(RenderApp);
         render_app.add_systems(
             Render,
-            prepare_textures_bind_group.in_set(RenderSet::PrepareBindGroups),
+            prepare_textures_bind_group.in_set(RenderSet::PrepareResources),
         );
         render_app.add_systems(
             Render,
-            prepare_uniforms_bind_group.in_set(RenderSet::PrepareBindGroups),
+            prepare_uniforms_bind_group.in_set(RenderSet::PrepareResources),
         );
 
         let mut render_graph = render_app.world.resource_mut::<RenderGraph>();
         render_graph.add_node(HydrologyLabel, HydrologyNode::default());
         render_graph.add_node_edge(HydrologyLabel, bevy::render::graph::CameraDriverLabel);
+
+        render_app.add_systems(
+            ExtractSchedule,
+            (extract_hydrology_config, extract_terrain_config),
+        );
     }
 
     fn finish(&self, app: &mut App) {
@@ -283,4 +292,12 @@ impl Plugin for HydrologyComputePlugin {
         render_app.init_resource::<HydrologyPipeline>();
         render_app.init_resource::<TerrainUniformBuffer>();
     }
+}
+
+fn extract_hydrology_config(mut commands: Commands, config: Extract<Res<HydrologyConfig>>) {
+    commands.insert_resource(**config);
+}
+
+fn extract_terrain_config(mut commands: Commands, config: Extract<Res<TerrainBuildConfig>>) {
+    commands.insert_resource(**config);
 }

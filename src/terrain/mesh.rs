@@ -25,9 +25,9 @@ struct Sampler {
     _configs: Vec<SampleConfig>,
 }
 
-#[derive(Component, Clone, Copy)]
+#[derive(Resource, Clone, Copy)]
 pub struct TerrainBuildConfig {
-    pub seed: u32,
+    pub seed: i32,
     pub base_amplitude: f32,
     pub base_frequency: f32,
 }
@@ -81,23 +81,12 @@ pub fn setup_low_poly_terrain(
     images: ResMut<Assets<Image>>,
     materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TerrainShaderExtension>>>,
 ) {
-    let build_config = TerrainBuildConfig::default();
-    let hydrology_config = HydrologyConfig::default();
-
     let mut mesh = Mesh::new(
         PrimitiveTopology::TriangleList,
         RenderAssetUsages::MAIN_WORLD | RenderAssetUsages::RENDER_WORLD,
     );
     update_mesh(&mut mesh);
-    spawn_mesh(
-        commands,
-        meshes,
-        images,
-        mesh,
-        materials,
-        build_config,
-        hydrology_config,
-    );
+    spawn_mesh(commands, meshes, images, mesh, materials);
 }
 
 fn update_mesh(mesh: &mut Mesh) {
@@ -114,33 +103,27 @@ fn spawn_mesh(
     images: ResMut<Assets<Image>>,
     mesh: Mesh,
     mut materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TerrainShaderExtension>>>,
-    build_config: TerrainBuildConfig,
-    hydrology_config: HydrologyConfig,
 ) {
     let (heightmap, normalmap_topright, normalmap_bottomleft) = build_images(images);
 
-    commands.spawn((
-        MaterialMeshBundle {
-            mesh: meshes.add(mesh),
-            material: materials.add(ExtendedMaterial {
-                base: StandardMaterial {
-                    base_color: Color::rgb(0.3, 0.5, 0.3),
-                    metallic: 0.2,
-                    perceptual_roughness: 1.0,
-                    opaque_render_method: OpaqueRendererMethod::Auto,
-                    ..Default::default()
-                },
-                extension: TerrainShaderExtension {
-                    heightmap: heightmap.clone(),
-                    normalmap_topright: normalmap_topright.clone(),
-                    normalmap_bottomleft: normalmap_bottomleft.clone(),
-                },
-            }),
-            ..default()
-        },
-        build_config,
-        hydrology_config,
-    ));
+    commands.spawn((MaterialMeshBundle {
+        mesh: meshes.add(mesh),
+        material: materials.add(ExtendedMaterial {
+            base: StandardMaterial {
+                base_color: Color::rgb(0.3, 0.5, 0.3),
+                metallic: 0.2,
+                perceptual_roughness: 1.0,
+                opaque_render_method: OpaqueRendererMethod::Auto,
+                ..Default::default()
+            },
+            extension: TerrainShaderExtension {
+                heightmap: heightmap.clone(),
+                normalmap_topright: normalmap_topright.clone(),
+                normalmap_bottomleft: normalmap_bottomleft.clone(),
+            },
+        }),
+        ..default()
+    },));
 
     commands.insert_resource(HydrologyImage {
         heightmap,
@@ -148,21 +131,8 @@ fn spawn_mesh(
         normalmap_bottomleft,
     });
 
-    // Values get overriden every frame.
-    // commands.insert_resource(TerrainUniform {
-    //     noise_seed: 0,
-    //     noise_amplitude: 0.0,
-    //     noise_base_frequency: 0.0,
-    //     dt: 0.0,
-    //     density: 0.0,
-    //     evap_rate: 0.0,
-    //     deposition_rate: 0.0,
-    //     min_volume: 0.0,
-    //     friction: 0.0,
-    //     drops_per_frame_per_chunck: 0,
-    //     drop_count: 0,
-    //     max_drops: 0,
-    // });
+    commands.insert_resource(TerrainBuildConfig::default());
+    commands.insert_resource(HydrologyConfig::default());
 }
 
 fn build_mesh_data() -> MeshDataResult {

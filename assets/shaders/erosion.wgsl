@@ -129,7 +129,20 @@ fn update(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     let location_i32 = vec2i(i32(invocation_id.x), i32(invocation_id.y));
     let location_f32 = vec2f(f32(location_i32.x), f32(location_i32.y));
 
+    let sizing = globals.noise_base_frequency;
+    let amplitude = globals.noise_amplitude;
+
+    let a = vec3f(location_f32.x,       simplexNoise2(location_f32 * sizing) * amplitude,                     location_f32.y);
+    let b = vec3f(location_f32.x,       simplexNoise2((location_f32 + vec2f(0.0, 1.0)) * sizing) * amplitude, location_f32.y + 1.0);
+    let c = vec3f(location_f32.x + 1.0, simplexNoise2((location_f32 + vec2f(1.0, 1.0)) * sizing) * amplitude, location_f32.y + 1.0);
+    let d = vec3f(location_f32.x + 1.0, simplexNoise2((location_f32 + vec2f(1.0, 0.0)) * sizing) * amplitude, location_f32.y);
+
+    let n1 = normalize(cross(b - a, c - a));
+    let n2 = normalize(cross(c - d, c - b));
+
     storageBarrier();
 
-    textureStore(heightmap, location_i32, vec4f(globals.noise_amplitude));
+    textureStore(heightmap, location_i32, vec4f(a.y));
+    textureStore(normalmap_topright, location_i32, vec4f(n1, 0.0));
+    textureStore(normalmap_bottomleft, location_i32, vec4f(n2, 0.0));
 }

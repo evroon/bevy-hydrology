@@ -4,28 +4,21 @@ use bevy_egui::{
     EguiContexts,
 };
 
-use super::{
-    hydrology_compute::HydrologyConfig,
-    uniforms::{TerrainUniform, TerrainUniformBuffer},
-};
+use super::{hydrology_compute::HydrologyConfig, TerrainBuildConfig};
 
-pub fn terrain_ui(config: &mut TerrainUniform, ui: &mut Ui) {
-    ui.add(egui::Slider::new(&mut config.noise_seed, 0..=120).text("Seed"));
+pub fn terrain_ui(config: &mut TerrainBuildConfig, ui: &mut Ui) {
+    ui.add(egui::Slider::new(&mut config.seed, 0..=120).text("Seed"));
     ui.end_row();
-    ui.add(egui::Slider::new(&mut config.noise_amplitude, 0.0..=120.0).text("Base amplitude"));
+    ui.add(egui::Slider::new(&mut config.base_amplitude, 0.0..=120.0).text("Base amplitude"));
     ui.end_row();
-    ui.add(
-        egui::Slider::new(&mut config.noise_base_frequency, 0.0005..=0.05).text("Base frequency"),
-    );
+    ui.add(egui::Slider::new(&mut config.base_frequency, 0.0005..=0.05).text("Base frequency"));
     ui.end_row();
 
-    // if ui.button("Rebuild terrain").clicked() {
-    //     rebuild_terrain(meshes, terrain_query);
-    // };
+    if ui.button("Rebuild terrain").clicked() {};
     ui.end_row();
 }
 
-pub fn hydrology_ui(config: &mut TerrainUniform, ui: &mut Ui) {
+pub fn hydrology_ui(config: &mut HydrologyConfig, ui: &mut Ui) {
     ui.add(egui::Slider::new(&mut config.dt, 0.01..=2.0).text("dt"));
     ui.end_row();
     ui.add(egui::Slider::new(&mut config.density, 0.1..=3.0).text("Density"));
@@ -62,32 +55,31 @@ pub fn hydrology_ui(config: &mut TerrainUniform, ui: &mut Ui) {
 }
 
 pub fn ui_system(
-    terrain_uniform_buffer: Option<ResMut<TerrainUniformBuffer>>,
+    mut terrain_uniform_config: ResMut<TerrainBuildConfig>,
+    mut hydrology_config: ResMut<HydrologyConfig>,
     mut contexts: EguiContexts,
 ) {
-    if let Some(mut config) = terrain_uniform_buffer {
-        egui::Window::new("Terrain Generation")
-            .current_pos(Pos2 { x: 10., y: 160. })
-            .show(contexts.ctx_mut(), |ui| {
-                egui::Grid::new("3dworld_grid")
-                    .num_columns(2)
-                    .spacing([40.0, 4.0])
-                    .striped(true)
-                    .show(ui, |ui| {
-                        terrain_ui(config.buffer.get_mut(), ui);
-                    });
-            });
+    egui::Window::new("Terrain Generation")
+        .current_pos(Pos2 { x: 10., y: 160. })
+        .show(contexts.ctx_mut(), |ui| {
+            egui::Grid::new("3dworld_grid")
+                .num_columns(2)
+                .spacing([40.0, 4.0])
+                .striped(true)
+                .show(ui, |ui| {
+                    terrain_ui(terrain_uniform_config.as_mut(), ui);
+                });
+        });
 
-        egui::Window::new("Hydrology")
-            .current_pos(Pos2 { x: 10., y: 320. })
-            .show(contexts.ctx_mut(), |ui| {
-                egui::Grid::new("3dworld_grid")
-                    .num_columns(2)
-                    .spacing([40.0, 4.0])
-                    .striped(true)
-                    .show(ui, |ui| {
-                        hydrology_ui(config.buffer.get_mut(), ui);
-                    });
-            });
-    }
+    egui::Window::new("Hydrology")
+        .current_pos(Pos2 { x: 10., y: 320. })
+        .show(contexts.ctx_mut(), |ui| {
+            egui::Grid::new("3dworld_grid")
+                .num_columns(2)
+                .spacing([40.0, 4.0])
+                .striped(true)
+                .show(ui, |ui| {
+                    hydrology_ui(hydrology_config.as_mut(), ui);
+                });
+        });
 }
