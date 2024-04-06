@@ -24,8 +24,8 @@ struct Vertex {
 
 @group(2) @binding(100) var heightmap_texture: texture_2d<f32>;
 @group(2) @binding(101) var heightmap_sampler: sampler;
-@group(2) @binding(102) var normalmap_topright_texture: texture_2d<f32>;
-@group(2) @binding(103) var normalmap_topright_sampler: sampler;
+@group(2) @binding(102) var normalmap_topleft_texture: texture_2d<f32>;
+@group(2) @binding(103) var normalmap_topleft_sampler: sampler;
 @group(2) @binding(104) var normalmap_bottomright_texture: texture_2d<f32>;
 @group(2) @binding(105) var normalmap_bottomright_sampler: sampler;
 
@@ -59,7 +59,7 @@ fn vertex(vertex: Vertex) -> VertexOutput {
     var normal = vec4f();
 
     if vertex.tex_coords.x < 3 {
-        normal = textureSampleLevel(normalmap_topright_texture, normalmap_topright_sampler, tex_coords, 0.0);
+        normal = textureSampleLevel(normalmap_topleft_texture, normalmap_topleft_sampler, tex_coords, 0.0);
     } else {
         normal = textureSampleLevel(normalmap_bottomright_texture, normalmap_bottomright_sampler, tex_coords, 0.0);
     }

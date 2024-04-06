@@ -20,7 +20,7 @@ struct Config {
 @group(0) @binding(0) var<uniform> config: Config;
 
 @group(1) @binding(0) var heightmap: texture_storage_2d<r32float, read_write>;
-@group(1) @binding(1) var normalmap_topright: texture_storage_2d<rgba32float, read_write>;
+@group(1) @binding(1) var normalmap_topleft: texture_storage_2d<rgba32float, read_write>;
 @group(1) @binding(2) var normalmap_bottomright: texture_storage_2d<rgba32float, read_write>;
 
 fn mod289(x: vec2f) -> vec2f {
@@ -108,8 +108,8 @@ fn sample_noise(location_f32: vec2f) -> f32 {
 }
 
 fn get_normal(location_u32: vec2f) -> vec3f {
-    if fract(location_u32.x) + fract(location_u32.y) > 1.0 {
-        return textureLoad(normalmap_topright, vec2u(location_u32)).xyz;
+    if fract(location_u32.x) + fract(location_u32.y) < 1.0 {
+        return textureLoad(normalmap_topleft, vec2u(location_u32)).xyz;
     }
     return textureLoad(normalmap_bottomright, vec2u(location_u32)).xyz;
 }
@@ -152,7 +152,7 @@ fn init(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     storageBarrier();
 
     textureStore(heightmap, location_i32, vec4f(a.y));
-    textureStore(normalmap_topright, location_i32, vec4f(n1, 0.0));
+    textureStore(normalmap_topleft, location_i32, vec4f(n1, 0.0));
     textureStore(normalmap_bottomright, location_i32, vec4f(n2, 0.0));
 }
 
@@ -205,7 +205,7 @@ fn update(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
         let n2 = normalize(cross(d - c, b - c));
 
         textureStore(heightmap, prev_pos, vec4f(new_height));
-        textureStore(normalmap_topright, prev_pos, vec4f(n1, 0.0));
+        textureStore(normalmap_topleft, prev_pos, vec4f(n1, 0.0));
         textureStore(normalmap_bottomright, prev_pos, vec4f(n2, 0.0));
     }
 }
