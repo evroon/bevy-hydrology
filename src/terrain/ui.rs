@@ -60,7 +60,7 @@ pub fn ui_system(
     mut contexts: EguiContexts,
 ) {
     egui::Window::new("Terrain Generation")
-        .current_pos(Pos2 { x: 10., y: 160. })
+        .current_pos(Pos2 { x: 10., y: 190. })
         .show(contexts.ctx_mut(), |ui| {
             egui::Grid::new("3dworld_grid")
                 .num_columns(2)

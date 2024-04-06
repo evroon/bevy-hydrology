@@ -13,6 +13,7 @@ use bevy::{
         Extract, Render, RenderApp, RenderSet,
     },
 };
+use rand::{thread_rng, Rng};
 
 use super::{
     uniforms::{HydrologyImage, TerrainUniform, TerrainUniformBuffer},
@@ -67,12 +68,15 @@ pub(crate) fn prepare_uniforms_bind_group(
     terrain_build_config: Res<TerrainBuildConfig>,
     hydrology_config: Res<HydrologyConfig>,
     render_device: Res<RenderDevice>,
+    time: Res<Time>,
 ) {
     let buffer = terrain_uniform_buffer.buffer.get_mut();
+    let mut rng = thread_rng();
 
     buffer.noise_seed = terrain_build_config.seed;
     buffer.noise_amplitude = terrain_build_config.base_amplitude;
     buffer.noise_base_frequency = terrain_build_config.base_frequency;
+    buffer.time_seconds = rng.gen_range(0.0..1e6); // * time.elapsed_seconds_wrapped();
     buffer.dt = hydrology_config.dt;
     buffer.density = hydrology_config.density;
     buffer.evap_rate = hydrology_config.evap_rate;
@@ -250,7 +254,7 @@ impl Node for HydrologyNode {
                     .get_compute_pipeline(pipeline.update_pipeline)
                     .unwrap();
                 pass.set_pipeline(update_pipeline);
-                pass.dispatch_workgroups(2, 4, 1);
+                pass.dispatch_workgroups(4, 4, 1);
             }
         }
         Ok(())
@@ -283,7 +287,7 @@ impl Plugin for HydrologyComputePlugin {
 
         render_app.add_systems(
             ExtractSchedule,
-            (extract_hydrology_config, extract_terrain_config),
+            (extract_hydrology_config, extract_terrain_config, extract_time),
         );
     }
 
@@ -300,4 +304,8 @@ fn extract_hydrology_config(mut commands: Commands, config: Extract<Res<Hydrolog
 
 fn extract_terrain_config(mut commands: Commands, config: Extract<Res<TerrainBuildConfig>>) {
     commands.insert_resource(**config);
+}
+
+fn extract_time(mut commands: Commands, time: Extract<Res<Time>>) {
+    commands.insert_resource(**time);
 }

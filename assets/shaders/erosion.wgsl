@@ -1,9 +1,11 @@
 const TERRAIN_SIZE = u32(256);
+const TERRAIN_SIZE_f32 = 256.0;
 
-struct Globals {
+struct Config {
     noise_seed: i32,
     noise_amplitude: f32,
     noise_base_frequency: f32,
+    time_seconds: f32,
     dt: f32,
     density: f32,
     evap_rate: f32,
@@ -15,7 +17,7 @@ struct Globals {
     max_drops: u32,
 };
 
-@group(0) @binding(0) var<uniform> globals: Globals;
+@group(0) @binding(0) var<uniform> config: Config;
 
 @group(1) @binding(0) var heightmap: texture_storage_2d<r32float, read_write>;
 @group(1) @binding(1) var normalmap_topright: texture_storage_2d<rgba32float, read_write>;
@@ -93,11 +95,42 @@ fn hash(value: u32) -> u32 {
 }
 
 fn random_coord(value: u32) -> u32 {
-    return hash(value) % TERRAIN_SIZE;
+    return hash(value + u32(config.time_seconds)) % (TERRAIN_SIZE * TERRAIN_SIZE);
 }
 
-fn sample_noise() {
+fn sample_noise(location_f32: vec2f) -> f32 {
+    var result = 0.0;
+    for (var i: i32 = 0; i < 6; i++) {
+        let variable_scaling = pow(2.0, f32(i));
+        result += simplexNoise2(location_f32 * config.noise_base_frequency * variable_scaling) / variable_scaling;
+    }
+    return result * config.noise_amplitude + 20.0;
+}
 
+fn get_normal(location_u32: vec2u) -> vec3f {
+    return textureLoad(normalmap_topright, location_u32).xyz;
+}
+
+fn get_height(location_u32: vec2u) -> f32 {
+    return textureLoad(heightmap, location_u32).x;
+}
+
+fn get_height_i(location_i32: vec2i) -> f32 {
+    return get_height(vec2u(location_i32));
+}
+
+fn get_gradient(p: vec2i) -> vec2f {
+    let right = get_height_i(p + vec2i(1, 0));
+    let left = get_height_i(p + vec2i(-1, 0));
+    let up = get_height_i(p + vec2i(0, 1));
+    let down = get_height_i(p + vec2i(0, -1));
+
+    return vec2f((right - left) / 2.0, (up - down) / 2.0);
+}
+
+fn get_normal_from_gradient(p: vec2i) -> vec3f {
+    let g = get_gradient(p);
+    return normalize(vec3f(-g.x, 1.0, -g.y));
 }
 
 @compute @workgroup_size(8, 8, 1)
@@ -105,13 +138,10 @@ fn init(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
     let location_i32 = vec2i(i32(invocation_id.x), i32(invocation_id.y));
     let location_f32 = vec2f(f32(location_i32.x), f32(location_i32.y));
 
-    let sizing = globals.noise_base_frequency;
-    let amplitude = globals.noise_amplitude;
-
-    let a = vec3f(location_f32.x,       simplexNoise2(location_f32 * sizing) * amplitude,                     location_f32.y);
-    let b = vec3f(location_f32.x,       simplexNoise2((location_f32 + vec2f(0.0, 1.0)) * sizing) * amplitude, location_f32.y + 1.0);
-    let c = vec3f(location_f32.x + 1.0, simplexNoise2((location_f32 + vec2f(1.0, 1.0)) * sizing) * amplitude, location_f32.y + 1.0);
-    let d = vec3f(location_f32.x + 1.0, simplexNoise2((location_f32 + vec2f(1.0, 0.0)) * sizing) * amplitude, location_f32.y);
+    let a = vec3f(location_f32.x,       sample_noise(location_f32),                   location_f32.y);
+    let b = vec3f(location_f32.x,       sample_noise(location_f32 + vec2f(0.0, 1.0)), location_f32.y + 1.0);
+    let c = vec3f(location_f32.x + 1.0, sample_noise(location_f32 + vec2f(1.0, 1.0)), location_f32.y + 1.0);
+    let d = vec3f(location_f32.x + 1.0, sample_noise(location_f32 + vec2f(1.0, 0.0)), location_f32.y);
 
     let n1 = normalize(cross(b - a, c - a));
     let n2 = normalize(cross(c - d, c - b));
@@ -126,23 +156,53 @@ fn init(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
 
 @compute @workgroup_size(8, 8, 1)
 fn update(@builtin(global_invocation_id) invocation_id: vec3<u32>) {
-    let location_i32 = vec2i(i32(invocation_id.x), i32(invocation_id.y));
-    let location_f32 = vec2f(f32(location_i32.x), f32(location_i32.y));
+    let rand_value = random_coord(invocation_id.x + invocation_id.y);
+    let newpos = vec2u(rand_value / TERRAIN_SIZE, rand_value % TERRAIN_SIZE);
 
-    let sizing = globals.noise_base_frequency;
-    let amplitude = globals.noise_amplitude;
+    let dt = config.dt;
 
-    let a = vec3f(location_f32.x,       simplexNoise2(location_f32 * sizing) * amplitude,                     location_f32.y);
-    let b = vec3f(location_f32.x,       simplexNoise2((location_f32 + vec2f(0.0, 1.0)) * sizing) * amplitude, location_f32.y + 1.0);
-    let c = vec3f(location_f32.x + 1.0, simplexNoise2((location_f32 + vec2f(1.0, 1.0)) * sizing) * amplitude, location_f32.y + 1.0);
-    let d = vec3f(location_f32.x + 1.0, simplexNoise2((location_f32 + vec2f(1.0, 0.0)) * sizing) * amplitude, location_f32.y);
-
-    let n1 = normalize(cross(b - a, c - a));
-    let n2 = normalize(cross(c - d, c - b));
+    var drop_pos = vec2f(newpos);
+    var drop_speed = vec2f(0.0);
+    var drop_volume = 1.0;
+    var drop_sediment = 0.0;
+    var i = 0;
 
     storageBarrier();
 
-    textureStore(heightmap, location_i32, vec4f(a.y));
-    textureStore(normalmap_topright, location_i32, vec4f(n1, 0.0));
-    textureStore(normalmap_bottomleft, location_i32, vec4f(n2, 0.0));
+    while (drop_volume > config.min_volume && i < 50) {
+        let prev_pos = vec2u(drop_pos);
+        let prev_pos_f32 = vec2f(prev_pos);
+        let normal = get_normal_from_gradient(vec2i(drop_pos));
+
+        i += 1;
+        drop_speed += dt * vec2f(normal.x, normal.z) / (drop_volume * config.density);
+        drop_pos += dt * drop_speed;
+        drop_speed *= 1.0 - dt * config.friction;
+
+        if drop_pos.x < 0.0 || drop_pos.y < 0.0 || drop_pos.x >= TERRAIN_SIZE_f32 || drop_pos.y >= TERRAIN_SIZE_f32 {
+            break;
+        }
+
+        let max_sediment = drop_volume * length(drop_speed) * (get_height(prev_pos) - get_height(vec2u(drop_pos)));
+        let sediment_diff = max(0.0, max_sediment) - drop_sediment;
+        let erosion = dt * drop_volume * config.deposition_rate * sediment_diff;
+
+        drop_sediment += dt * config.deposition_rate * sediment_diff;
+        drop_volume *= 1.0 - dt * config.evap_rate;
+
+        let height = get_height(prev_pos);
+        let new_height = height - erosion;
+
+        let a = vec3f(prev_pos_f32.x + 0.0, new_height,                         prev_pos_f32.y + 0.0);
+        let b = vec3f(prev_pos_f32.x + 0.0, get_height(prev_pos + vec2u(0, 1)), prev_pos_f32.y + 1.0);
+        let c = vec3f(prev_pos_f32.x + 1.0, get_height(prev_pos + vec2u(1, 1)), prev_pos_f32.y + 1.0);
+        let d = vec3f(prev_pos_f32.x + 1.0, get_height(prev_pos + vec2u(1, 0)), prev_pos_f32.y + 0.0);
+
+        let n1 = normalize(cross(b - a, c - a));
+        let n2 = normalize(cross(c - d, c - b));
+
+        textureStore(heightmap, prev_pos, vec4f(new_height));
+        textureStore(normalmap_topright, prev_pos, vec4f(n1, 0.0));
+        textureStore(normalmap_bottomleft, prev_pos, vec4f(n2, 0.0));
+    }
 }
