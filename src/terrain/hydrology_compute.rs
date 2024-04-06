@@ -68,7 +68,6 @@ pub(crate) fn prepare_uniforms_bind_group(
     terrain_build_config: Res<TerrainBuildConfig>,
     hydrology_config: Res<HydrologyConfig>,
     render_device: Res<RenderDevice>,
-    time: Res<Time>,
 ) {
     let buffer = terrain_uniform_buffer.buffer.get_mut();
     let mut rng = thread_rng();
@@ -287,7 +286,11 @@ impl Plugin for HydrologyComputePlugin {
 
         render_app.add_systems(
             ExtractSchedule,
-            (extract_hydrology_config, extract_terrain_config, extract_time),
+            (
+                extract_hydrology_config,
+                extract_terrain_config,
+                extract_time,
+            ),
         );
     }
 
