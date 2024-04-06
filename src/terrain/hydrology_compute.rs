@@ -106,9 +106,9 @@ pub(crate) fn prepare_textures_bind_group(
     render_device: Res<RenderDevice>,
 ) {
     let heightmap_view = gpu_images.get(&hydrology_image.heightmap).unwrap();
-    let normalmap_topright_view = gpu_images.get(&hydrology_image.normalmap_topright).unwrap();
-    let normalmap_bottomleft_view = gpu_images
-        .get(&hydrology_image.normalmap_bottomleft)
+    let normalmap_topleft_view = gpu_images.get(&hydrology_image.normalmap_topleft).unwrap();
+    let normalmap_bottomright_view = gpu_images
+        .get(&hydrology_image.normalmap_bottomright)
         .unwrap();
 
     let bind_group = render_device.create_bind_group(
@@ -116,8 +116,8 @@ pub(crate) fn prepare_textures_bind_group(
         &pipeline.texture_bind_group_layout,
         &BindGroupEntries::sequential((
             &heightmap_view.texture_view,
-            &normalmap_topright_view.texture_view,
-            &normalmap_bottomleft_view.texture_view,
+            &normalmap_topleft_view.texture_view,
+            &normalmap_bottomright_view.texture_view,
         )),
     );
     commands.insert_resource(HydrologyImageBindGroup(bind_group));

@@ -26,8 +26,8 @@ struct Vertex {
 @group(2) @binding(101) var heightmap_sampler: sampler;
 @group(2) @binding(102) var normalmap_topright_texture: texture_2d<f32>;
 @group(2) @binding(103) var normalmap_topright_sampler: sampler;
-@group(2) @binding(104) var normalmap_bottomleft_texture: texture_2d<f32>;
-@group(2) @binding(105) var normalmap_bottomleft_sampler: sampler;
+@group(2) @binding(104) var normalmap_bottomright_texture: texture_2d<f32>;
+@group(2) @binding(105) var normalmap_bottomright_sampler: sampler;
 
 const TERRAIN_SIZE = 256.0;
 
@@ -44,13 +44,16 @@ fn vertex(vertex: Vertex) -> VertexOutput {
         tex_coords -= vec2f(0.0, 1.0) / TERRAIN_SIZE;
     }
     else if vertex.tex_coords.x == 2.0 {
+        tex_coords -= vec2f(1.0, 0.0) / TERRAIN_SIZE;
+    }
+    else if vertex.tex_coords.x == 3.0 {
         tex_coords -= vec2f(1.0, 1.0) / TERRAIN_SIZE;
     }
     else if vertex.tex_coords.x == 4.0 {
-        tex_coords -= vec2f(1.0, 1.0) / TERRAIN_SIZE;
+        tex_coords -= vec2f(1.0, 0.0) / TERRAIN_SIZE;
     }
     else if vertex.tex_coords.x == 5.0 {
-        tex_coords -= vec2f(1.0, 0.0) / TERRAIN_SIZE;
+        tex_coords -= vec2f(0.0, 1.0) / TERRAIN_SIZE;
     }
 
     var normal = vec4f();
@@ -58,7 +61,7 @@ fn vertex(vertex: Vertex) -> VertexOutput {
     if vertex.tex_coords.x < 3 {
         normal = textureSampleLevel(normalmap_topright_texture, normalmap_topright_sampler, tex_coords, 0.0);
     } else {
-        normal = textureSampleLevel(normalmap_bottomleft_texture, normalmap_bottomleft_sampler, tex_coords, 0.0);
+        normal = textureSampleLevel(normalmap_bottomright_texture, normalmap_bottomright_sampler, tex_coords, 0.0);
     }
 
     out.world_position = mesh_position_local_to_world(model, vec4<f32>(vertex.position, 1.0));

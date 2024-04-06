@@ -53,8 +53,8 @@ pub(crate) struct HydrologyImage {
     pub(crate) heightmap: Handle<Image>,
 
     #[storage_texture(1, image_format = Rgba32Float, access = ReadWrite)]
-    pub(crate) normalmap_topright: Handle<Image>,
+    pub(crate) normalmap_topleft: Handle<Image>,
 
     #[storage_texture(2, image_format = Rgba32Float, access = ReadWrite)]
-    pub(crate) normalmap_bottomleft: Handle<Image>,
+    pub(crate) normalmap_bottomright: Handle<Image>,
 }

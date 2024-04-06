@@ -50,11 +50,11 @@ pub struct TerrainShaderExtension {
 
     #[texture(102, visibility(vertex))]
     #[sampler(103, visibility(vertex))]
-    normalmap_topright: Handle<Image>,
+    normalmap_topleft: Handle<Image>,
 
     #[texture(104, visibility(vertex))]
     #[sampler(105, visibility(vertex))]
-    normalmap_bottomleft: Handle<Image>,
+    normalmap_bottomright: Handle<Image>,
 }
 
 impl MaterialExtension for TerrainShaderExtension {
@@ -104,7 +104,7 @@ fn spawn_mesh(
     mesh: Mesh,
     mut materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TerrainShaderExtension>>>,
 ) {
-    let (heightmap, normalmap_topright, normalmap_bottomleft) = build_images(images);
+    let (heightmap, normalmap_topleft, normalmap_bottomright) = build_images(images);
 
     commands.spawn((MaterialMeshBundle {
         mesh: meshes.add(mesh),
@@ -118,8 +118,8 @@ fn spawn_mesh(
             },
             extension: TerrainShaderExtension {
                 heightmap: heightmap.clone(),
-                normalmap_topright: normalmap_topright.clone(),
-                normalmap_bottomleft: normalmap_bottomleft.clone(),
+                normalmap_topleft: normalmap_topleft.clone(),
+                normalmap_bottomright: normalmap_bottomright.clone(),
             },
         }),
         ..default()
@@ -127,8 +127,8 @@ fn spawn_mesh(
 
     commands.insert_resource(HydrologyImage {
         heightmap,
-        normalmap_topright,
-        normalmap_bottomleft,
+        normalmap_topleft,
+        normalmap_bottomright,
     });
 
     commands.insert_resource(TerrainBuildConfig::default());
@@ -151,12 +151,12 @@ fn build_mesh_data() -> MeshDataResult {
             let i_32 = x + y * TERRAIN_SIZE.x;
             let i: usize = i_32 as usize;
 
-            positions[i * 6] = [x_pos, 0.0, z_pos];
+            positions[i * 6 + 0] = [x_pos, 0.0, z_pos];
             positions[i * 6 + 1] = [x_pos, 0.0, z_pos + CELL_SIZE];
-            positions[i * 6 + 2] = [x_pos + CELL_SIZE, 0.0, z_pos + CELL_SIZE];
-            positions[i * 6 + 3] = [x_pos, 0.0, z_pos];
-            positions[i * 6 + 4] = [x_pos + CELL_SIZE, 0.0, z_pos + CELL_SIZE];
-            positions[i * 6 + 5] = [x_pos + CELL_SIZE, 0.0, z_pos];
+            positions[i * 6 + 2] = [x_pos + CELL_SIZE, 0.0, z_pos];
+            positions[i * 6 + 3] = [x_pos + CELL_SIZE, 0.0, z_pos + CELL_SIZE];
+            positions[i * 6 + 4] = [x_pos + CELL_SIZE, 0.0, z_pos];
+            positions[i * 6 + 5] = [x_pos, 0.0, z_pos + CELL_SIZE];
 
             tex_coords[i * 6] = [0.0, 0.0];
             tex_coords[i * 6 + 1] = [1.0, 0.0];

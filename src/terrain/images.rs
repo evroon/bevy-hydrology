@@ -24,7 +24,7 @@ pub fn build_images(
     heightmap_image.texture_descriptor.usage =
         TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
 
-    let mut normalmap_topright_image = Image::new_fill(
+    let mut normalmap_topleft_image = Image::new_fill(
         Extent3d {
             width: TERRAIN_SIZE.x,
             height: TERRAIN_SIZE.y,
@@ -35,10 +35,10 @@ pub fn build_images(
         TextureFormat::Rgba32Float,
         RenderAssetUsages::RENDER_WORLD,
     );
-    normalmap_topright_image.texture_descriptor.usage =
+    normalmap_topleft_image.texture_descriptor.usage =
         TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
 
-    let mut normalmap_bottomleft_image = Image::new_fill(
+    let mut normalmap_bottomright_image = Image::new_fill(
         Extent3d {
             width: TERRAIN_SIZE.x,
             height: TERRAIN_SIZE.y,
@@ -49,12 +49,12 @@ pub fn build_images(
         TextureFormat::Rgba32Float,
         RenderAssetUsages::RENDER_WORLD,
     );
-    normalmap_bottomleft_image.texture_descriptor.usage =
+    normalmap_bottomright_image.texture_descriptor.usage =
         TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
 
     (
         images.add(heightmap_image),
-        images.add(normalmap_topright_image),
-        images.add(normalmap_bottomleft_image),
+        images.add(normalmap_topleft_image),
+        images.add(normalmap_bottomright_image),
     )
 }
