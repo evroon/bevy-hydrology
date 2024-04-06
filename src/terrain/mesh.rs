@@ -151,7 +151,7 @@ fn build_mesh_data() -> MeshDataResult {
             let i_32 = x + y * TERRAIN_SIZE.x;
             let i: usize = i_32 as usize;
 
-            positions[i * 6 + 0] = [x_pos, 0.0, z_pos];
+            positions[i * 6] = [x_pos, 0.0, z_pos];
             positions[i * 6 + 1] = [x_pos, 0.0, z_pos + CELL_SIZE];
             positions[i * 6 + 2] = [x_pos + CELL_SIZE, 0.0, z_pos];
             positions[i * 6 + 3] = [x_pos + CELL_SIZE, 0.0, z_pos + CELL_SIZE];
