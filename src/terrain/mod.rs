@@ -1,11 +1,13 @@
-mod system;
-use system::*;
-mod hydrology;
+mod mesh;
+use mesh::*;
+mod hydrology_compute;
+mod images;
 mod ui;
+mod uniforms;
 
 use bevy::{pbr::ExtendedMaterial, prelude::*};
 
-use self::{hydrology::hydrology_system, ui::ui_system};
+use self::{hydrology_compute::HydrologyComputePlugin, ui::ui_system};
 
 pub const TERRAIN_SIZE: bevy::prelude::UVec2 = UVec2::new(256, 256);
 pub const TERRAIN_SIZE_F32: bevy::prelude::Vec2 =
@@ -22,8 +24,8 @@ impl Plugin for LowPolyTerrainPlugin {
         app.add_plugins(MaterialPlugin::<
             ExtendedMaterial<StandardMaterial, TerrainShaderExtension>,
         >::default())
+            .add_plugins(HydrologyComputePlugin)
             .add_systems(Startup, setup_low_poly_terrain)
-            .add_systems(Update, ui_system)
-            .add_systems(Update, hydrology_system);
+            .add_systems(Update, ui_system);
     }
 }

@@ -25,6 +25,7 @@ fn main() {
                 prevent_default_event_handling: false,
                 ..default()
             }),
+
             ..default()
         }))
         .add_systems(Startup, set_window_icon)
