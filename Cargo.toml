@@ -45,7 +45,7 @@ noise = "0.9.0"
 rand = { version = "0.8.5" }
 
 # keep the following in sync with Bevy's dependencies
-winit = { version = "0.29.15", default-features = false }
+winit = { version = "0.30.0", default-features = false }
 image = { version = "0.25", default-features = false }
 bevy_panorbit_camera = "0.18.1"
 
