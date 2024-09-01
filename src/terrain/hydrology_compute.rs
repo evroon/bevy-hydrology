@@ -9,7 +9,7 @@ use bevy::{
         render_graph::{Node, NodeRunError, RenderGraph, RenderGraphContext, RenderLabel},
         render_resource::{binding_types::uniform_buffer, *},
         renderer::{RenderContext, RenderDevice, RenderQueue},
-        texture::Image,
+        texture::GpuImage,
         Extract, Render, RenderApp, RenderSet,
     },
 };
@@ -101,7 +101,7 @@ pub(crate) fn prepare_uniforms_bind_group(
 pub(crate) fn prepare_textures_bind_group(
     mut commands: Commands,
     pipeline: Res<HydrologyPipeline>,
-    gpu_images: Res<RenderAssets<Image>>,
+    gpu_images: Res<RenderAssets<GpuImage>>,
     hydrology_image: Res<HydrologyImage>,
     render_device: Res<RenderDevice>,
 ) {
@@ -280,7 +280,7 @@ impl Plugin for HydrologyComputePlugin {
             prepare_uniforms_bind_group.in_set(RenderSet::PrepareResources),
         );
 
-        let mut render_graph = render_app.world.resource_mut::<RenderGraph>();
+        let mut render_graph = render_app.world_mut().resource_mut::<RenderGraph>();
         render_graph.add_node(HydrologyLabel, HydrologyNode::default());
         render_graph.add_node_edge(HydrologyLabel, bevy::render::graph::CameraDriverLabel);
 

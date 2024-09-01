@@ -15,7 +15,7 @@ pub fn simple_3d_scene(mut commands: Commands, mut ambient_light: ResMut<Ambient
 
     commands.spawn(DirectionalLightBundle {
         directional_light: DirectionalLight {
-            illuminance: 22000.0,
+            illuminance: 8000.0,
             shadows_enabled: true,
             ..default()
         },
@@ -41,13 +41,13 @@ pub fn simple_3d_scene(mut commands: Commands, mut ambient_light: ResMut<Ambient
             ..Default::default()
         },
         FogSettings {
-            color: Color::rgba(0.35, 0.48, 0.66, 1.0),
-            directional_light_color: Color::rgba(1.0, 0.95, 0.85, 0.5),
+            color: Color::linear_rgba(0.35, 0.48, 0.66, 1.0),
+            directional_light_color: Color::linear_rgba(1.0, 0.95, 0.85, 0.5),
             directional_light_exponent: 30.0,
             falloff: FogFalloff::from_visibility_colors(
                 8192.0,
-                Color::rgb(0.35, 0.5, 0.66),
-                Color::rgb(0.8, 0.844, 1.0),
+                Color::linear_rgb(0.35, 0.5, 0.66),
+                Color::linear_rgb(0.8, 0.844, 1.0),
             ),
         },
         // ScreenSpaceAmbientOcclusionBundle::default(), Too slow for my GPU
@@ -82,8 +82,8 @@ pub fn directional_light_ui(
     ui.end_row();
 
     if ui.button("Toggle fog").clicked() {
-        let a = fog.color.a();
-        fog.color.set_a(1.0 - a);
+        let a = fog.color.alpha();
+        fog.color.set_alpha(1.0 - a);
     };
     // ui.add(egui::Slider::new(&mut fog.falloff., 100.0..=100_000.0));
     ui.end_row();

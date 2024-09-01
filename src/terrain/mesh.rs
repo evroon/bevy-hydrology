@@ -14,17 +14,6 @@ use bevy::{
 
 type MeshDataResult = (usize, Vec<[f32; 3]>, Vec<[f32; 2]>, Vec<u32>);
 
-#[derive(Clone)]
-struct SampleConfig {
-    _amplitude: f32,
-    _frequency: f32,
-}
-
-#[derive(Clone)]
-struct Sampler {
-    _configs: Vec<SampleConfig>,
-}
-
 #[derive(Resource, Clone, Copy)]
 pub struct TerrainBuildConfig {
     pub seed: i32,
@@ -110,7 +99,7 @@ fn spawn_mesh(
         mesh: meshes.add(mesh),
         material: materials.add(ExtendedMaterial {
             base: StandardMaterial {
-                base_color: Color::rgb(0.3, 0.5, 0.3),
+                base_color: Color::linear_rgb(0.3, 0.5, 0.3),
                 metallic: 0.2,
                 perceptual_roughness: 1.0,
                 opaque_render_method: OpaqueRendererMethod::Auto,
