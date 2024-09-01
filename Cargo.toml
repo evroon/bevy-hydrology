@@ -27,8 +27,10 @@ dev = [
 ]
 
 [dependencies]
-bevy = { version = "0.14.0", default-features = false, features = [
+bevy = { version = "0.14.1", default-features = false, features = [
     "bevy_asset",
+    "bevy_state",
+    "bevy_color",
     "bevy_scene",
     "bevy_winit",
     "bevy_core_pipeline",
@@ -37,17 +39,18 @@ bevy = { version = "0.14.0", default-features = false, features = [
     "hdr",
     "x11",
     "tonemapping_luts",
+    "smaa_luts",
     "default_font",
 ] }
-# bevy_asset_loader = { version = "0.20.0" }
-bevy_egui = "0.27.1"
+# bevy_asset_loader = { version = "0.21" }
+bevy_egui = "0.29.0"
 noise = "0.9.0"
 rand = { version = "0.8.5" }
 
 # keep the following in sync with Bevy's dependencies
-winit = { version = "0.29.15", default-features = false }
+winit = { version = "0.30.5", default-features = false }
 image = { version = "0.25", default-features = false }
-bevy_panorbit_camera = "0.18.2"
+bevy_panorbit_camera = "0.19.3"
 
 [build-dependencies]
 embed-resource = "1.8.0"
