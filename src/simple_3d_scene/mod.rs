@@ -1,6 +1,6 @@
 mod system;
 use bevy_egui::EguiPlugin;
-use system::*;
+use system::{simple_3d_scene, ui_system};
 
 use bevy::prelude::*;
 

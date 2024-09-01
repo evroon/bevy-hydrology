@@ -1,5 +1,5 @@
 mod mesh;
-use mesh::*;
+use mesh::{setup_low_poly_terrain, TerrainBuildConfig, TerrainShaderExtension};
 mod hydrology_compute;
 mod images;
 mod ui;
