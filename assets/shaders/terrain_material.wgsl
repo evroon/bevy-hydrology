@@ -3,7 +3,7 @@
     pbr_functions::alpha_discard,
     view_transformations::position_world_to_clip,
 }
-#import bevy_pbr::mesh_functions::{get_model_matrix, mesh_position_local_to_world, mesh_normal_local_to_world}
+#import bevy_pbr::mesh_functions::{get_world_from_local, mesh_position_local_to_world, mesh_normal_local_to_world}
 #ifdef PREPASS_PIPELINE
 #import bevy_pbr::{
     prepass_io::{VertexOutput, FragmentOutput},
@@ -35,7 +35,7 @@ const TERRAIN_SIZE = 256.0;
 fn vertex(vertex: Vertex) -> VertexOutput {
     // Based on: https://github.com/bevyengine/bevy/blob/286bc8cce52add44e6f6f9c8cd778d26eaa1a761/crates/bevy_pbr/src/render/mesh.wgsl
     var out: VertexOutput;
-    let model = get_model_matrix(vertex.instance_index);
+    let model = get_world_from_local(vertex.instance_index);
 
     var pos = (vertex.position.xz + TERRAIN_SIZE / 2.0) / TERRAIN_SIZE;
     var tex_coords = vec2f(pos);

@@ -15,7 +15,7 @@ pub fn simple_3d_scene(mut commands: Commands, mut ambient_light: ResMut<Ambient
 
     commands.spawn(DirectionalLightBundle {
         directional_light: DirectionalLight {
-            illuminance: 22000.0,
+            illuminance: 8000.0,
             shadows_enabled: true,
             ..default()
         },
