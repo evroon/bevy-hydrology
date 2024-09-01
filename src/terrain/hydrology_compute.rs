@@ -7,7 +7,11 @@ use bevy::{
         extract_resource::ExtractResourcePlugin,
         render_asset::RenderAssets,
         render_graph::{Node, NodeRunError, RenderGraph, RenderGraphContext, RenderLabel},
-        render_resource::{binding_types::uniform_buffer, *},
+        render_resource::{
+            binding_types::uniform_buffer, AsBindGroup, BindGroup, BindGroupEntries,
+            BindGroupLayout, BindGroupLayoutEntries, CachedComputePipelineId, CachedPipelineState,
+            ComputePassDescriptor, ComputePipelineDescriptor, PipelineCache, ShaderStages,
+        },
         renderer::{RenderContext, RenderDevice, RenderQueue},
         texture::GpuImage,
         Extract, Render, RenderApp, RenderSet,

@@ -1,6 +1,9 @@
 use bevy::{
     prelude::*,
-    render::{extract_resource::ExtractResource, render_resource::*},
+    render::{
+        extract_resource::ExtractResource,
+        render_resource::{AsBindGroup, ShaderType, UniformBuffer},
+    },
 };
 
 #[derive(Clone, Resource, ExtractResource, Reflect, ShaderType)]
