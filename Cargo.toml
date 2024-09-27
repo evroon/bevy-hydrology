@@ -53,7 +53,7 @@ image = { version = "0.25", default-features = false }
 bevy_panorbit_camera = "0.19.3"
 
 [build-dependencies]
-embed-resource = "1.8.0"
+embed-resource = "2.5.0"
 
 [lints.clippy]
 wildcard_imports = "deny"
