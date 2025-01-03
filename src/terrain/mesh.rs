@@ -95,9 +95,9 @@ fn spawn_mesh(
 ) {
     let (heightmap, normalmap_topleft, normalmap_bottomright) = build_images(images);
 
-    commands.spawn((MaterialMeshBundle {
-        mesh: meshes.add(mesh),
-        material: materials.add(ExtendedMaterial {
+    commands.spawn((
+        Mesh3d(meshes.add(mesh)),
+        MeshMaterial3d(materials.add(ExtendedMaterial {
             base: StandardMaterial {
                 base_color: Color::linear_rgb(0.3, 0.5, 0.3),
                 metallic: 0.2,
@@ -110,9 +110,8 @@ fn spawn_mesh(
                 normalmap_topleft: normalmap_topleft.clone(),
                 normalmap_bottomright: normalmap_bottomright.clone(),
             },
-        }),
-        ..default()
-    },));
+        })),
+    ));
 
     commands.insert_resource(HydrologyImage {
         heightmap,
