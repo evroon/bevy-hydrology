@@ -30,7 +30,7 @@ pub fn hydrology_ui(config: &mut HydrologyConfig, ui: &mut Ui) {
     ui.add(egui::Slider::new(&mut config.friction, 0.5..=0.005).text("Friction"));
     ui.end_row();
     ui.add(
-        egui::Slider::new(&mut config.drops_per_frame_per_chunck, 0..=2048).text("Drops per frame"),
+        egui::Slider::new(&mut config.drops_per_frame_per_chunk, 0..=2048).text("Drops per frame"),
     );
     ui.end_row();
     ui.add(egui::Slider::new(&mut config.min_volume, 0.001..=0.1).text("Minimum volume"));
@@ -48,7 +48,7 @@ pub fn hydrology_ui(config: &mut HydrologyConfig, ui: &mut Ui) {
         config.deposition_rate = default.deposition_rate;
         config.friction = default.friction;
         config.min_volume = default.min_volume;
-        config.drops_per_frame_per_chunck = default.drops_per_frame_per_chunck;
+        config.drops_per_frame_per_chunk = default.drops_per_frame_per_chunk;
         config.drop_count = default.drop_count;
         config.max_drops = default.max_drops;
     };
