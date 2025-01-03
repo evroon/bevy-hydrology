@@ -36,7 +36,7 @@ pub struct HydrologyConfig {
     pub deposition_rate: f32,
     pub min_volume: f32,
     pub friction: f32,
-    pub drops_per_frame_per_chunck: u32,
+    pub drops_per_frame_per_chunk: u32,
     pub drop_count: u32,
     pub max_drops: u32,
 }
@@ -51,7 +51,7 @@ impl Default for HydrologyConfig {
             deposition_rate: 0.1,
             friction: 0.05,
             min_volume: 0.05,
-            drops_per_frame_per_chunck: 1000,
+            drops_per_frame_per_chunk: 1000,
             drop_count: 0,
             max_drops: 200_000,
         }
@@ -86,7 +86,7 @@ pub(crate) fn prepare_uniforms_bind_group(
     buffer.deposition_rate = hydrology_config.deposition_rate;
     buffer.min_volume = hydrology_config.min_volume;
     buffer.friction = hydrology_config.friction;
-    buffer.drops_per_frame_per_chunck = hydrology_config.drops_per_frame_per_chunck;
+    buffer.drops_per_frame_per_chunck = hydrology_config.drops_per_frame_per_chunk;
     buffer.drop_count = hydrology_config.drop_count;
     buffer.max_drops = hydrology_config.max_drops;
 
