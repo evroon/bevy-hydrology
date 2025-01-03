@@ -151,6 +151,7 @@ impl FromWorld for HydrologyPipeline {
             render_device.create_bind_group_layout("uniform_bind_group_layout", &entries);
 
         let init_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
+            zero_initialize_workgroup_memory: false,
             label: None,
             layout: vec![
                 uniform_bind_group_layout.clone(),
@@ -162,6 +163,7 @@ impl FromWorld for HydrologyPipeline {
             entry_point: Cow::from("init"),
         });
         let update_pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
+            zero_initialize_workgroup_memory: false,
             label: None,
             layout: vec![
                 uniform_bind_group_layout.clone(),
