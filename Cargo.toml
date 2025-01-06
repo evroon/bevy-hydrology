@@ -26,7 +26,7 @@ dev = [
 ]
 
 [dependencies]
-bevy = { version = "0.15.0", default-features = false, features = [
+bevy = { version = "0.15.1", default-features = false, features = [
     "bevy_asset",
     "bevy_state",
     "bevy_color",
