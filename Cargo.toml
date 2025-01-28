@@ -44,7 +44,7 @@ bevy = { version = "0.15.1", default-features = false, features = [
 # bevy_asset_loader = { version = "0.21" }
 bevy_egui = "0.31.1"
 noise = "0.9.0"
-rand = { version = "0.8.5" }
+rand = { version = "0.9.0" }
 
 # keep the following in sync with Bevy's dependencies
 winit = { version = "0.30.8", default-features = false }
