@@ -607,7 +607,7 @@ dependencies = [
  "crossbeam-channel",
  "egui",
  "encase",
- "image 0.25.5",
+ "image 0.25.6",
  "js-sys",
  "thread_local",
  "wasm-bindgen",
@@ -686,7 +686,7 @@ dependencies = [
  "bevy_egui",
  "bevy_panorbit_camera",
  "embed-resource",
- "image 0.25.5",
+ "image 0.25.6",
  "noise",
  "rand 0.9.0",
  "winit",
@@ -707,7 +707,7 @@ dependencies = [
  "bytemuck",
  "derive_more",
  "futures-lite",
- "image 0.25.5",
+ "image 0.25.6",
  "ktx2",
  "ruzstd",
  "serde",
@@ -974,7 +974,7 @@ dependencies = [
  "downcast-rs",
  "encase",
  "futures-lite",
- "image 0.25.5",
+ "image 0.25.6",
  "js-sys",
  "ktx2",
  "naga",
@@ -2388,9 +2388,9 @@ dependencies = [
 
 [[package]]
 name = "image"
-version = "0.25.5"
+version = "0.25.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd6f44aed642f18953a158afeb30206f4d50da59fbc66ecb53c66488de73563b"
+checksum = "db35664ce6b9810857a38a906215e75a9c879f0696556a39f59c62829710251a"
 dependencies = [
  "bytemuck",
  "byteorder-lite",
