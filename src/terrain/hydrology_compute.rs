@@ -29,7 +29,7 @@ const WORKGROUP_SIZE: u32 = 8;
 
 #[derive(Resource, Clone, Copy)]
 pub struct HydrologyConfig {
-    // volume_factor: f32,
+    pub volume_factor: f32,
     pub dt: f32,
     pub density: f32,
     pub evap_rate: f32,
@@ -44,7 +44,7 @@ pub struct HydrologyConfig {
 impl Default for HydrologyConfig {
     fn default() -> Self {
         Self {
-            // volume_factor: 100.0,
+            volume_factor: 100.0,
             dt: 1.2,
             density: 1.0,
             evap_rate: 0.001,
@@ -80,6 +80,7 @@ pub(crate) fn prepare_uniforms_bind_group(
     buffer.noise_amplitude = terrain_build_config.base_amplitude;
     buffer.noise_base_frequency = terrain_build_config.base_frequency;
     buffer.time_seconds = rng.gen_range(0.0..1e6); // * time.elapsed_seconds_wrapped();
+    buffer.volume_factor = hydrology_config.volume_factor;
     buffer.dt = hydrology_config.dt;
     buffer.density = hydrology_config.density;
     buffer.evap_rate = hydrology_config.evap_rate;
@@ -114,6 +115,7 @@ pub(crate) fn prepare_textures_bind_group(
     let normalmap_bottomright_view = gpu_images
         .get(&hydrology_image.normalmap_bottomright)
         .unwrap();
+    let watermap_view = gpu_images.get(&hydrology_image.watermap).unwrap();
 
     let bind_group = render_device.create_bind_group(
         None,
@@ -122,6 +124,7 @@ pub(crate) fn prepare_textures_bind_group(
             &heightmap_view.texture_view,
             &normalmap_topleft_view.texture_view,
             &normalmap_bottomright_view.texture_view,
+            &watermap_view.texture_view,
         )),
     );
     commands.insert_resource(HydrologyImageBindGroup(bind_group));

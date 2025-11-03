@@ -44,6 +44,10 @@ pub struct TerrainShaderExtension {
     #[texture(104, visibility(vertex))]
     #[sampler(105, visibility(vertex))]
     normalmap_bottomright: Handle<Image>,
+
+    #[texture(106, visibility(vertex))]
+    #[sampler(107, visibility(vertex))]
+    watermap: Handle<Image>,
 }
 
 impl MaterialExtension for TerrainShaderExtension {
@@ -93,7 +97,7 @@ fn spawn_mesh(
     mesh: Mesh,
     mut materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TerrainShaderExtension>>>,
 ) {
-    let (heightmap, normalmap_topleft, normalmap_bottomright) = build_images(images);
+    let (heightmap, normalmap_topleft, normalmap_bottomright, watermap) = build_images(images);
 
     commands.spawn((
         Mesh3d(meshes.add(mesh)),
@@ -109,6 +113,7 @@ fn spawn_mesh(
                 heightmap: heightmap.clone(),
                 normalmap_topleft: normalmap_topleft.clone(),
                 normalmap_bottomright: normalmap_bottomright.clone(),
+                watermap: watermap.clone(),
             },
         })),
     ));
@@ -117,6 +122,7 @@ fn spawn_mesh(
         heightmap,
         normalmap_topleft,
         normalmap_bottomright,
+        watermap,
     });
 
     commands.insert_resource(TerrainBuildConfig::default());

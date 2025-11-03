@@ -42,17 +42,13 @@ fn vertex(vertex: Vertex) -> VertexOutput {
 
     if vertex.tex_coords.x == 1.0 {
         tex_coords -= vec2f(0.0, 1.0) / TERRAIN_SIZE;
-    }
-    else if vertex.tex_coords.x == 2.0 {
+    } else if vertex.tex_coords.x == 2.0 {
         tex_coords -= vec2f(1.0, 0.0) / TERRAIN_SIZE;
-    }
-    else if vertex.tex_coords.x == 3.0 {
+    } else if vertex.tex_coords.x == 3.0 {
         tex_coords -= vec2f(1.0, 1.0) / TERRAIN_SIZE;
-    }
-    else if vertex.tex_coords.x == 4.0 {
+    } else if vertex.tex_coords.x == 4.0 {
         tex_coords -= vec2f(1.0, 0.0) / TERRAIN_SIZE;
-    }
-    else if vertex.tex_coords.x == 5.0 {
+    } else if vertex.tex_coords.x == 5.0 {
         tex_coords -= vec2f(0.0, 1.0) / TERRAIN_SIZE;
     }
 
@@ -82,7 +78,7 @@ fn fragment(
 ) -> FragmentOutput {
     var pbr_input = pbr_input_from_standard_material(in, is_front);
 
-    if (in.world_normal.y < 0.8) {
+    if in.world_normal.y < 0.8 {
         pbr_input.material.base_color.g /= 2.0;
     }
 

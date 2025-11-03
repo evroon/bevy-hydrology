@@ -5,7 +5,11 @@ mod images;
 mod ui;
 mod uniforms;
 
-use bevy::{pbr::ExtendedMaterial, prelude::*};
+use bevy::{
+    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
+    pbr::ExtendedMaterial,
+    prelude::*,
+};
 
 use self::{hydrology_compute::HydrologyComputePlugin, ui::ui_system};
 
@@ -25,6 +29,8 @@ impl Plugin for LowPolyTerrainPlugin {
             ExtendedMaterial<StandardMaterial, TerrainShaderExtension>,
         >::default())
             .add_plugins(HydrologyComputePlugin)
+            // .add_plugins(FrameTimeDiagnosticsPlugin)
+            // .add_plugins(LogDiagnosticsPlugin::default())
             .add_systems(Startup, setup_low_poly_terrain)
             .add_systems(Update, ui_system);
     }

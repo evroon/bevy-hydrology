@@ -19,6 +19,8 @@ pub fn terrain_ui(config: &mut TerrainBuildConfig, ui: &mut Ui) {
 }
 
 pub fn hydrology_ui(config: &mut HydrologyConfig, ui: &mut Ui) {
+    ui.add(egui::Slider::new(&mut config.volume_factor, 1.0..=100.0).text("volume factor"));
+    ui.end_row();
     ui.add(egui::Slider::new(&mut config.dt, 0.01..=2.0).text("dt"));
     ui.end_row();
     ui.add(egui::Slider::new(&mut config.density, 0.1..=3.0).text("Density"));

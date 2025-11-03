@@ -13,6 +13,7 @@ pub struct TerrainUniform {
     pub(crate) noise_amplitude: f32,
     pub(crate) noise_base_frequency: f32,
     pub time_seconds: f32,
+    pub volume_factor: f32,
     pub dt: f32,
     pub density: f32,
     pub evap_rate: f32,
@@ -27,6 +28,7 @@ pub struct TerrainUniform {
 impl Default for TerrainUniform {
     fn default() -> Self {
         Self {
+            volume_factor: 100.0,
             noise_seed: 96,
             noise_amplitude: 15.0,
             noise_base_frequency: 1.0 / 80.0,
@@ -60,4 +62,7 @@ pub(crate) struct HydrologyImage {
 
     #[storage_texture(2, image_format = Rgba32Float, access = ReadWrite)]
     pub(crate) normalmap_bottomright: Handle<Image>,
+
+    #[storage_texture(3, image_format = Rgba32Float, access = ReadWrite)]
+    pub(crate) watermap: Handle<Image>,
 }
