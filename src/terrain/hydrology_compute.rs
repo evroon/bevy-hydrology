@@ -17,7 +17,7 @@ use bevy::{
         Extract, Render, RenderApp, RenderSet,
     },
 };
-use rand::{thread_rng, Rng};
+use rand::random_range;
 
 use super::{
     uniforms::{HydrologyImage, TerrainUniform, TerrainUniformBuffer},
@@ -74,12 +74,10 @@ pub(crate) fn prepare_uniforms_bind_group(
     render_device: Res<RenderDevice>,
 ) {
     let buffer = terrain_uniform_buffer.buffer.get_mut();
-    let mut rng = thread_rng();
-
     buffer.noise_seed = terrain_build_config.seed;
     buffer.noise_amplitude = terrain_build_config.base_amplitude;
     buffer.noise_base_frequency = terrain_build_config.base_frequency;
-    buffer.time_seconds = rng.gen_range(0.0..1e6); // * time.elapsed_seconds_wrapped();
+    buffer.time_seconds = random_range(0.0..1e6); // * time.elapsed_seconds_wrapped();
     buffer.dt = hydrology_config.dt;
     buffer.density = hydrology_config.density;
     buffer.evap_rate = hydrology_config.evap_rate;
